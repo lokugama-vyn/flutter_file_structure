@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "160337160898",
+    "project_id": "solar-app-login",
+    "storage_bucket": "solar-app-login.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:160337160898:android:5ca68ce47bce0753aaa95b",
+        "android_client_info": {
+          "package_name": "com.example.flutter_file_structure"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "160337160898-rakcvqu450rppm1j7lrroaeb2as7c3mv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCi8ovmW0RZPTLnA7CCF5Mc4RcZYprfXjc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "160337160898-rakcvqu450rppm1j7lrroaeb2as7c3mv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
