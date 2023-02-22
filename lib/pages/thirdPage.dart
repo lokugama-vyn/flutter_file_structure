@@ -24,6 +24,7 @@ class _thirdPageState extends State<thirdPage> {
   late Topic hours_cleaned;
   late Topic damage_detects;
   var selectedTab = 1;
+  String new1 = '';
   bool damage = false;
   @override
   void initState() {
