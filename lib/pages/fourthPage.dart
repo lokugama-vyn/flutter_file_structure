@@ -19,7 +19,7 @@ class _fourthPageState extends State<fourthPage> {
     ros = Ros(url: 'ws://10.10.22.249:9090');
     forward = Topic(
         ros: ros,
-        name: '/forward',
+        name: '/topic',
         type: "std_msgs/Float64",
         reconnectOnClose: true,
         queueLength: 10,
@@ -27,14 +27,14 @@ class _fourthPageState extends State<fourthPage> {
 
     right = Topic(
         ros: ros,
-        name: '/right',
+        name: '/topic',
         type: "std_msgs/Float64",
         reconnectOnClose: true,
         queueLength: 10,
         queueSize: 10);
     reverse = Topic(
         ros: ros,
-        name: '/reverse',
+        name: '/topic',
         type: "std_msgs/Float64",
         reconnectOnClose: true,
         queueLength: 10,
@@ -42,14 +42,14 @@ class _fourthPageState extends State<fourthPage> {
 
     left = Topic(
         ros: ros,
-        name: '/left',
+        name: '/topic',
         type: "std_msgs/Float64",
         reconnectOnClose: true,
         queueLength: 10,
         queueSize: 10);
     stop = Topic(
       ros: ros,
-      name: '/stop',
+      name: '/topic',
       type: "std_msgs/Float64",
       reconnectOnClose: true,
       queueSize: 10,
