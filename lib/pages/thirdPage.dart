@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
@@ -29,50 +30,12 @@ class _thirdPageState extends State<thirdPage> {
   @override
   void initState() {
     // TODO: implement initState
-    ros = Ros(url: 'ws://10.10.22.249:9090');
-    battery_state = Topic(
-        ros: ros,
-        name: '/forward',
-        type: "std_msgs/Float64",
-        reconnectOnClose: true,
-        queueLength: 10,
-        queueSize: 10);
 
-    hours_cleaned = Topic(
-        ros: ros,
-        name: '/right',
-        type: "std_msgs/Float64",
-        reconnectOnClose: true,
-        queueLength: 10,
-        queueSize: 10);
-    damage_detects = Topic(
-        ros: ros,
-        name: '/reverse',
-        type: "std_msgs/bool",
-        reconnectOnClose: true,
-        queueLength: 10,
-        queueSize: 10);
     super.initState();
     mymethod();
   }
 
   //TOPIC HANDLING
-
-  void initConnection() async {
-    ros.connect();
-    //await forward.subscribe();
-    await battery_state.subscribe(subscribeHandler);
-    await hours_cleaned.subscribe(subscribeHandler);
-    await damage_detects.subscribe(subscribeHandler);
-
-    setState(() {});
-  }
-
-  String msgReceived = '';
-  Future<void> subscribeHandler(Map<String, dynamic> msg) async {
-    msgReceived = json.encode(msg);
-    setState(() {});
-  }
 
   //need to add code
   void battery_state_func() async {}
@@ -111,7 +74,6 @@ class _thirdPageState extends State<thirdPage> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Monitoring Panel"),
@@ -285,6 +247,7 @@ class SelectCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var display1;
+
     //final TextStyle textStyle = Theme.of(context).textTheme.display1;
     return Card(
         color: Colors.orange,
