@@ -30,11 +30,64 @@ class _thirdPageState extends State<thirdPage> {
   @override
   void initState() {
     // TODO: implement initState
-
+    ros = Ros(url: 'ws://10.10.22.249:9090');
+    battery_state = Topic(
+      ros: ros,
+      name: '/topic',
+      type: "std_msgs/Float64",
+      reconnectOnClose: true,
+      queueSize: 10,
+      queueLength: 10,
+    );
+    hours_cleaned = Topic(
+      ros: ros,
+      name: '/topic',
+      type: "std_msgs/Float64",
+      reconnectOnClose: true,
+      queueSize: 10,
+      queueLength: 10,
+    );
+    damage_detects = Topic(
+      ros: ros,
+      name: '/topic',
+      type: "std_msgs/Float64",
+      reconnectOnClose: true,
+      queueSize: 10,
+      queueLength: 10,
+    );
     super.initState();
     mymethod();
+    initConnection();
   }
 
+  void initConnection() async {
+    ros.connect();
+    await damage_detects.subscribe(subscribeHandler1);
+    await hours_cleaned.subscribe(subscribeHandler2);
+    await battery_state.subscribe(subscribeHandler3);
+    //await forward.subscribe(); //advertise?
+
+    setState(() {});
+  }
+
+//store topics details in strings
+  String damage_details = '';
+  String cleaning_hours = '';
+  String battery_status = '';
+  Future<void> subscribeHandler1(Map<String, dynamic> msg) async {
+    damage_details = json.encode(msg);
+    setState(() {});
+  }
+
+  Future<void> subscribeHandler2(Map<String, dynamic> msg) async {
+    cleaning_hours = json.encode(msg);
+    setState(() {});
+  }
+
+  Future<void> subscribeHandler3(Map<String, dynamic> msg) async {
+    battery_status = json.encode(msg);
+    setState(() {});
+  }
   //TOPIC HANDLING
 
   //need to add code
