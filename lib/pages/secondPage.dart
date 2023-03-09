@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_file_structure/pages/thirdPage.dart';
 import 'package:flutter_file_structure/sidebar/sidebar_layout.dart';
+import 'package:roslibdart/roslibdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const List<Widget> icons = <Widget>[
@@ -28,6 +29,53 @@ class _SecondPageState extends State<SecondPage> {
   String horizontalPanels = "";
   String verticalPanels = "";
   bool vertical = false;
+  //ros commands
+  late Ros ros;
+  late Topic _drycleanMsg;
+  late Topic _wetcleanMsg;
+  void initState() async {
+    ros = Ros(url: 'ws://10.10.22.249:9090');
+    _drycleanMsg = Topic(
+        ros: ros,
+        name: '/topic',
+        type: "std_msgs/bool",
+        reconnectOnClose: true,
+        queueLength: 10,
+        queueSize: 10);
+
+    _wetcleanMsg = Topic(
+        ros: ros,
+        name: '/topic',
+        type: "std_msgs/bool",
+        reconnectOnClose: true,
+        queueLength: 10,
+        queueSize: 10);
+
+    ros.connect();
+
+    await _drycleanMsg.advertise();
+    await _wetcleanMsg.advertise();
+    super.initState();
+  }
+
+  void _dryClean() async {
+    bool _dryclean = true;
+    await _drycleanMsg.publish(_dryclean);
+  }
+
+  void _wetClean() async {
+    bool _wetclean = true;
+    await _wetcleanMsg.publish(_wetclean);
+  }
+
+  void destroyConnection() async {
+    //await chatter.unsubscribe(); //forward unadvertise?
+    await _drycleanMsg.unadvertise();
+    await _wetcleanMsg.unadvertise();
+
+    await ros.close();
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,9 +114,17 @@ class _SecondPageState extends State<SecondPage> {
                     onPressed: (int index) {
                       setState(() {
                         // The button that is tapped is set to true, and the others to false.
+
                         for (int i = 0; i < _selectedWeather.length; i++) {
                           _selectedWeather[i] = i == index;
                         }
+                        //publish topics
+                        if (index == 0) {
+                          _dryClean();
+                        } else if (index == 1) {
+                          _wetClean();
+                        }
+                        destroyConnection();
                       });
                     },
                     borderRadius: const BorderRadius.all(Radius.circular(10)),
