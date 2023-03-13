@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:rxdart/rxdart.dart';
 import 'package:flutter_file_structure/sidebar/menu_items.dart' as menu;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../pages/fifthPage.dart';
 import '../pages/fourthPage.dart';
@@ -25,9 +27,23 @@ class _SideBarState extends State<SideBar>
   late Stream<bool>? isSidebarOpenedStream;
   late StreamSink<bool>? isSidebarOpenedSink;
   final bool isSideBarOpened = false;
+  List<String> docIDs = [];
   final _animationDuration = const Duration(milliseconds: 500);
+
+  //get docids
+  Future getdocIDS() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .get()
+        .then((snapshot) => snapshot.docs.forEach((document) {
+              docIDs.add(document.reference.id);
+            }));
+  }
+
   @override
   void initState() {
+    getdocIDS();
+
     // TODO: implement initState
     super.initState();
     _animationController =
