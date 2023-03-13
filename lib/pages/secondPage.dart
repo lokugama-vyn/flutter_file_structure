@@ -33,7 +33,7 @@ class _SecondPageState extends State<SecondPage> {
   late Ros ros;
   late Topic _drycleanMsg;
   late Topic _wetcleanMsg;
-  void initState() async {
+  void initState() {
     ros = Ros(url: 'ws://10.10.22.249:9090');
     _drycleanMsg = Topic(
         ros: ros,
@@ -51,13 +51,10 @@ class _SecondPageState extends State<SecondPage> {
         queueLength: 10,
         queueSize: 10);
 
-    ros.connect();
-
-    await _drycleanMsg.advertise();
-    await _wetcleanMsg.advertise();
     super.initState();
   }
 
+//need to add ros.connect() and advertisng topics method like initconnection
   void _dryClean() async {
     bool _dryclean = true;
     await _drycleanMsg.publish(_dryclean);
