@@ -45,6 +45,7 @@ dependencies:
   firebase_auth: ^4.2.5
   cloud_firestore: ^4.3.1
   roslibdart: 
+  get: ^4.6.5
   
   
   
