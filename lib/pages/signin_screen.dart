@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_file_structure/pages/secondPage.dart';
 import 'package:flutter_file_structure/reusable_widgets/reusable_widgets.dart';
-
 import 'package:flutter_file_structure/pages/reset_password.dart';
 import 'package:flutter_file_structure/pages/signup_screen.dart';
 
