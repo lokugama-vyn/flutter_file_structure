@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_file_structure/pages/signin_screen.dart';
 import 'package:flutter_file_structure/reusable_widgets/reusable_widgets.dart';
@@ -11,12 +12,19 @@ class SignUpScreen extends StatefulWidget {
   _SignUpScreenState createState() => _SignUpScreenState();
 }
 
+Future addUserDetails(String username, String email) async {
+  await FirebaseFirestore.instance
+      .collection('user_details')
+      .add({'username': username, 'email': email});
+}
+
 class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController _passwordTextController = TextEditingController();
   TextEditingController _emailTextController = TextEditingController();
   TextEditingController _userNameTextController = TextEditingController();
   String username = '';
   String useremail = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,12 +72,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 firebaseUIButton(context, "Sign Up", () async {
                   if (_passwordTextController.text.length >= 6 &&
                       isValidEmail(_emailTextController.text)) {
-                    FirebaseAuth.instance
-                        .createUserWithEmailAndPassword(
-                            email: _emailTextController.text,
-                            password: _passwordTextController.text)
+                    FirebaseAuth.instance.createUserWithEmailAndPassword(
+                        email: _emailTextController.text,
+                        password: _passwordTextController.text);
+                    addUserDetails(_userNameTextController.text.trim(),
+                            _emailTextController.text.trim())
+                        //firestore database
                         .then((value) {
                       print("Created New Account");
+
+                      //added the topics save user details print(FirebaseAuth.instance.currentUser);
                       Navigator.push(
                           context,
                           MaterialPageRoute(
