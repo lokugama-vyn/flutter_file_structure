@@ -12,18 +12,20 @@ class SignUpScreen extends StatefulWidget {
   _SignUpScreenState createState() => _SignUpScreenState();
 }
 
-Future addUserDetails(String username, String email) async {
-  await FirebaseFirestore.instance
-      .collection('user_details')
-      .add({'username': username, 'email': email});
-}
-
 class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController _passwordTextController = TextEditingController();
   TextEditingController _emailTextController = TextEditingController();
   TextEditingController _userNameTextController = TextEditingController();
   String username = '';
   String useremail = '';
+
+  Future addUserDetails(String username, String email) async {
+    print(FirebaseAuth.instance.currentUser?.uid);
+    await FirebaseFirestore.instance
+        .collection('user_details')
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .set({'username': username, 'email': email});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,10 +74,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 firebaseUIButton(context, "Sign Up", () async {
                   if (_passwordTextController.text.length >= 6 &&
                       isValidEmail(_emailTextController.text)) {
-                    FirebaseAuth.instance.createUserWithEmailAndPassword(
+                    await FirebaseAuth.instance.createUserWithEmailAndPassword(
                         email: _emailTextController.text,
                         password: _passwordTextController.text);
-                    addUserDetails(_userNameTextController.text.trim(),
+                    await addUserDetails(_userNameTextController.text.trim(),
                             _emailTextController.text.trim())
                         //firestore database
                         .then((value) {
