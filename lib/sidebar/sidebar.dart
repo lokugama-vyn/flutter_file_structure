@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:rxdart/rxdart.dart';
@@ -29,15 +30,19 @@ class _SideBarState extends State<SideBar>
   final bool isSideBarOpened = false;
   List<String> docIDs = [];
   final _animationDuration = const Duration(milliseconds: 500);
+  String username = '';
+  String email = '';
 
   //get docids
   Future getdocIDS() async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .get()
-        .then((snapshot) => snapshot.docs.forEach((document) {
-              docIDs.add(document.reference.id);
-            }));
+    DocumentSnapshot ds = await FirebaseFirestore.instance
+        .collection('user_details')
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .get();
+    setState(() {
+      username = ds.get('username');
+      email = ds.get('email');
+    });
   }
 
   @override
@@ -100,19 +105,23 @@ class _SideBarState extends State<SideBar>
                       ),
                       ListTile(
                         title: Text(
-                          'username',
+                          username,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 30,
                             fontWeight: FontWeight.w800,
                           ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
                         subtitle: Text(
-                          'user@gmail.com',
+                          email,
                           style: TextStyle(
                             color: const Color(0xFF1BB5FD),
                             fontSize: 20,
                           ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
                         leading: CircleAvatar(
                           child: Icon(
