@@ -25,6 +25,8 @@ class _RobotAnimationState extends State<RobotAnimation>
   int _currentColumn = 0;
   int _currentColumnUpdate = 0;
   double gridcellLenght = 0;
+
+  bool forwarddirection = true;
   @override
   void initState() {
     _gridRowCount = int.parse(widget.horizontal);
@@ -50,24 +52,30 @@ class _RobotAnimationState extends State<RobotAnimation>
 
   void method() {
     setState(() {
-      gridcellLenght = gridcellLenght +
-          ((MediaQuery.of(context).size.width - 30) / _gridColumnCount) / 10;
-      _currentColumnUpdate = _currentColumnUpdate + 1;
+      if (forwarddirection) {
+        gridcellLenght = gridcellLenght +
+            ((MediaQuery.of(context).size.width - 50) / _gridColumnCount) / 10;
+        _currentColumnUpdate = _currentColumnUpdate + 1;
+      } else {
+        gridcellLenght = gridcellLenght -
+            ((MediaQuery.of(context).size.width - 50) / _gridColumnCount) / 10;
+        _currentColumnUpdate = _currentColumnUpdate + 1;
+      }
     });
-    //print(_currentColumnUpdate);
+    //print(gridcellLenght);
     if (_currentColumnUpdate == _gridColumnCount) {
-      _currentRow++;
-      print(_currentColumnUpdate.toString());
-      _animation = Tween<Offset>(
-        begin: Offset(_currentColumn.toDouble() - 1, _currentRow.toDouble()),
-        end: Offset(
-            _currentColumn.toDouble() + gridcellLenght, _currentRow.toDouble()),
-      ).animate(_animationController);
+      setState(() {
+        _currentRow++;
+        forwarddirection = !forwarddirection;
+        _currentColumnUpdate = 0;
+      });
+
+      //print(_currentColumnUpdate.toString() + " " + _currentRow.toString());
+
     } else {
       _animation = Tween<Offset>(
-        begin: Offset(_currentColumn.toDouble(), _currentRow.toDouble()),
-        end: Offset(
-            _currentColumn.toDouble() + gridcellLenght, _currentRow.toDouble()),
+        begin: Offset(_currentColumnUpdate.toDouble(), _currentRow.toDouble()),
+        end: Offset(gridcellLenght, 0),
       ).animate(_animationController);
     }
     _animationController.forward();
@@ -77,46 +85,50 @@ class _RobotAnimationState extends State<RobotAnimation>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Stack(
         children: [
           Container(
-            color: Colors.black,
-            padding: EdgeInsets.all(15),
-            child: GridView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: _gridRowCount * _gridColumnCount,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: _gridColumnCount,
-              ),
-              itemBuilder: (context, index) {
-                final rowIndex = (index / _gridColumnCount).ceil();
-                final colIndex = index % _gridColumnCount;
+            padding: EdgeInsets.all(25),
+            child: SingleChildScrollView(
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: _gridRowCount * _gridColumnCount,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: _gridColumnCount,
+                ),
+                itemBuilder: (context, index) {
+                  final rowIndex = (index / _gridColumnCount).floor();
+                  final colIndex = index % _gridColumnCount;
 
-                return Container(
-                  width: _gridSize,
-                  height: _gridSize,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white),
-                  ),
-                  child: Stack(
-                    children: [
-                      if (rowIndex == _currentRow && colIndex == _currentColumn)
-                        SlideTransition(
-                          position: _animation,
-                          child: Column(children: <Widget>[
-                            CircleAvatar(
-                              radius:
-                                  5, // change the radius as per your requirement
-                              backgroundColor: Colors
-                                  .red, // change the color as per your requirement
-                              // add child widget if needed
-                            )
-                          ]),
-                        ),
-                    ],
-                  ),
-                );
-              },
+                  return Container(
+                    width: _gridSize,
+                    height: _gridSize,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white),
+                    ),
+                    child: Stack(
+                      children: [
+                        if (rowIndex == _currentRow &&
+                            colIndex == _currentColumn)
+                          SlideTransition(
+                            position: _animation,
+                            child: Column(children: <Widget>[
+                              CircleAvatar(
+                                radius:
+                                    5, // change the radius as per your requirement
+                                backgroundColor: Colors.red,
+                                // change the color as per your requirement
+                                // add child widget if needed
+                              )
+                            ]),
+                          ),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
           ),
           ElevatedButton(
@@ -125,7 +137,7 @@ class _RobotAnimationState extends State<RobotAnimation>
             ),
             onPressed: method,
             child: Text(
-              "Cleaning",
+              "Process Started",
             ),
           ),
         ],
