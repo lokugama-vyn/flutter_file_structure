@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+
+import 'package:flutter_file_structure/pages/robot_animation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:roslibdart/roslibdart.dart';
 
@@ -27,6 +29,7 @@ class _thirdPageState extends State<thirdPage> {
   var selectedTab = 1;
   String new1 = '';
   bool damage = true;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -100,13 +103,15 @@ class _thirdPageState extends State<thirdPage> {
     setState(() {});
   }
 
-  late int? vertical;
+  late int? verticle;
   late int? horizontal;
   Future<void> mymethod() async {
     final prefs = await SharedPreferences.getInstance();
-    vertical = prefs.getInt('verticalpanels');
-    horizontal = prefs.getInt('horizontalpanels');
-    print(vertical.toString() + " " + horizontal.toString());
+    setState(() {
+      verticle = prefs.getInt('verticalpanels');
+      horizontal = prefs.getInt('horizontalpanels');
+    });
+    //print(vertical.toString() + " " + horizontal.toString());
   }
 
   @override
@@ -195,17 +200,10 @@ class _thirdPageState extends State<thirdPage> {
                               Color.fromARGB(255, 149, 70, 196),
                               Color.fromARGB(255, 94, 97, 244),
                             ])),
-                        child: Scaffold(
-                          backgroundColor: Colors.transparent,
-                          body: Center(
-                            child: Column(children: <Widget>[
-                              Image.asset(
-                                "assets/images/ani.gif",
-                                height: 300,
-                                width: 300,
-                              ),
-                            ]),
-                          ),
+                        child: MaterialApp(
+                          home: RobotAnimation(
+                              vertical: verticle.toString(),
+                              horizontal: horizontal.toString()),
                         ),
                       );
                     } else {
