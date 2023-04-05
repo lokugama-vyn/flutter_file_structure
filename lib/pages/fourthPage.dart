@@ -16,41 +16,41 @@ class _fourthPageState extends State<fourthPage> {
   late Topic left;
   @override
   void initState() {
-    ros = Ros(url: 'ws://10.10.22.249:9090');
+    ros = Ros(url: 'wss://solarpanelcleaningrobot.pagekite.me/');
     forward = Topic(
         ros: ros,
-        name: '/topic',
-        type: "std_msgs/Float64",
+        name: '/forward',
+        type: "geometry_msgs/Twist",
         reconnectOnClose: true,
         queueLength: 10,
         queueSize: 10);
 
     right = Topic(
         ros: ros,
-        name: '/topic',
-        type: "std_msgs/Float64",
+        name: '/right',
+        type: "geometry_msgs/Twist",
         reconnectOnClose: true,
         queueLength: 10,
         queueSize: 10);
     reverse = Topic(
         ros: ros,
-        name: '/topic',
-        type: "std_msgs/Float64",
+        name: '/reverse',
+        type: "geometry_msgs/Twist",
         reconnectOnClose: true,
         queueLength: 10,
         queueSize: 10);
 
     left = Topic(
         ros: ros,
-        name: '/topic',
-        type: "std_msgs/Float64",
+        name: '/left',
+        type: "geometry_msgs/Twist",
         reconnectOnClose: true,
         queueLength: 10,
         queueSize: 10);
     stop = Topic(
       ros: ros,
-      name: '/topic',
-      type: "std_msgs/Float64",
+      name: '/stop',
+      type: "geometry_msgs/Twist",
       reconnectOnClose: true,
       queueSize: 10,
       queueLength: 10,
@@ -63,17 +63,27 @@ class _fourthPageState extends State<fourthPage> {
     ros.connect();
     //await forward.subscribe(); //advertise?
     await forward.advertise();
+
     await right.advertise();
     await left.advertise();
+    //just for testing
+
     await reverse.advertise();
     await stop.advertise();
     setState(() {});
   }
 
   void forward_func() async {
-    var msg = {'data': 'hello'};
+    var linear = {'x': 0.5, 'y': 0.0, 'z': 0.0};
+    var angular = {'x': 0.0, 'y': 0.0, 'z': 0.5};
+    var msg = {'linear': linear, 'angular': angular};
+
+    //print('cmd published');
+
+    // var msg = {'data': 'go straight'};
     await forward.publish(msg);
-    print('done publihsed');
+    print('cmd published');
+    // print('done publihsed forward topic');
   }
 
   void reverse_func() async {
@@ -82,30 +92,49 @@ class _fourthPageState extends State<fourthPage> {
     var twist = {'linear': linear, 'angular': angular};
     await reverse.publish(twist);
     print('cmd published');
+
+    // print('done publihsed2');
+    // var msg = {'data': 'turn reverse'};
+    // await reverse.publish(msg);
+    // print('done publihsed reverse topic');
   }
 
   void right_func() async {
     var linear = {'x': 0.5, 'y': 0.0, 'z': 0.0};
     var angular = {'x': 0.0, 'y': 0.0, 'z': 0.5};
     var twist = {'linear': linear, 'angular': angular};
-    await reverse.publish(twist);
+    await right.publish(twist);
     print('cmd published');
+
+    // var msg = {'data': 'turn right'};
+    // await right.publish(msg);
+    // print('done publihsed right topic');
   }
 
   void left_func() async {
     var linear = {'x': 0.5, 'y': 0.0, 'z': 0.0};
     var angular = {'x': 0.0, 'y': 0.0, 'z': 0.5};
     var twist = {'linear': linear, 'angular': angular};
-    await reverse.publish(twist);
+    await left.publish(twist);
     print('cmd published');
+    // print('done publihsed');
+    // await left.advertise();
+    // print('done publihsed2');
+    // var msg = {'data': 'turn left'};
+    // await left.publish(msg);
+    // print('done publihsed left topic');
   }
 
   void stop_func() async {
     var linear = {'x': 0.5, 'y': 0.0, 'z': 0.0};
     var angular = {'x': 0.0, 'y': 0.0, 'z': 0.5};
     var twist = {'linear': linear, 'angular': angular};
-    await reverse.publish(twist);
+    await stop.publish(twist);
     print('cmd published');
+
+    // var msg = {'data': 'stop '};
+    // await stop.publish(msg);
+    // print('done publihsed stop topic');
   }
 
   void destroyConnection() async {
@@ -189,6 +218,7 @@ class _fourthPageState extends State<fourthPage> {
                     _buildControlButton(
                       icon: Icons.arrow_back,
                       onPressed: () {
+                        //print('done publihsed');
                         left_func();
                         // Send command to robot to turn left
                       },
@@ -250,7 +280,10 @@ class _fourthPageState extends State<fourthPage> {
           icon,
           color: Colors.white,
         ),
-        onPressed: (() {}),
+        onPressed: () {
+          onPressed!();
+          // Send command to robot to stop
+        },
       ),
     );
   }
