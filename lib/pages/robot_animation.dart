@@ -56,30 +56,51 @@ class _RobotAnimationState extends State<RobotAnimation>
         gridcellLenght = gridcellLenght +
             ((MediaQuery.of(context).size.width - 50) / _gridColumnCount) / 10;
         _currentColumnUpdate = _currentColumnUpdate + 1;
+
+        if (_currentColumnUpdate == _gridColumnCount) {
+          setState(() {
+            _currentRow++;
+            forwarddirection = !forwarddirection;
+            _currentColumnUpdate = -1;
+          });
+
+          //print(_currentColumnUpdate.toString() + " " + _currentRow.toString());
+
+        } else {
+          _animation = Tween<Offset>(
+            begin:
+                Offset(_currentColumnUpdate.toDouble(), _currentRow.toDouble()),
+            end: Offset(gridcellLenght, 0),
+          ).animate(_animationController);
+        }
+        _animationController.forward();
+        setState(() {});
       } else {
         gridcellLenght = gridcellLenght -
             ((MediaQuery.of(context).size.width - 50) / _gridColumnCount) / 10;
         _currentColumnUpdate = _currentColumnUpdate + 1;
+
+        if (_currentColumnUpdate == _gridColumnCount) {
+          setState(() {
+            _currentRow++;
+            forwarddirection = !forwarddirection;
+            _currentColumnUpdate = -1;
+          });
+
+          //print(_currentColumnUpdate.toString() + " " + _currentRow.toString());
+
+        } else {
+          _animation = Tween<Offset>(
+            begin:
+                Offset(_currentColumnUpdate.toDouble(), _currentRow.toDouble()),
+            end: Offset(gridcellLenght, 0),
+          ).animate(_animationController);
+        }
+        _animationController.forward();
+        setState(() {});
       }
     });
     //print(gridcellLenght);
-    if (_currentColumnUpdate == _gridColumnCount) {
-      setState(() {
-        _currentRow++;
-        forwarddirection = !forwarddirection;
-        _currentColumnUpdate = 0;
-      });
-
-      //print(_currentColumnUpdate.toString() + " " + _currentRow.toString());
-
-    } else {
-      _animation = Tween<Offset>(
-        begin: Offset(_currentColumnUpdate.toDouble(), _currentRow.toDouble()),
-        end: Offset(gridcellLenght, 0),
-      ).animate(_animationController);
-    }
-    _animationController.forward();
-    setState(() {});
   }
 
   @override
