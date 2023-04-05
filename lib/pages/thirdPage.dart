@@ -26,17 +26,33 @@ class _thirdPageState extends State<thirdPage> {
   late Topic battery_state;
   late Topic hours_cleaned;
   late Topic damage_detects;
+  late Topic bat_state_request;
+  late Topic hours_cleaned_request;
+  late Topic damage_detects_request;
   var selectedTab = 1;
   String new1 = '';
   bool damage = true;
-
+  String damage_details = '';
+  String cleaning_hours = '';
+  String battery_status = '';
+  List<Choice> choices = <Choice>[
+    Choice(title: 'Hours Taken :', icon: Icons.access_alarm, details: ''),
+    Choice(
+        title: 'Battery Level :',
+        icon: Icons.battery_charging_full,
+        details: ''),
+    Choice(
+        title: 'Damage Detection :',
+        icon: Icons.cameraswitch_rounded,
+        details: ''),
+  ];
   @override
   void initState() {
     // TODO: implement initState
-    ros = Ros(url: 'ws://10.10.22.249:9090');
+    ros = Ros(url: 'wss://solarpanelcleaningrobot.pagekite.me/');
     battery_state = Topic(
       ros: ros,
-      name: '/topic',
+      name: '/battery_state',
       type: "std_msgs/String",
       reconnectOnClose: true,
       queueSize: 10,
@@ -44,7 +60,7 @@ class _thirdPageState extends State<thirdPage> {
     );
     hours_cleaned = Topic(
       ros: ros,
-      name: '/topic',
+      name: '/hours_cleaned',
       type: "std_msgs/String",
       reconnectOnClose: true,
       queueSize: 10,
@@ -52,12 +68,33 @@ class _thirdPageState extends State<thirdPage> {
     );
     damage_detects = Topic(
       ros: ros,
-      name: '/topic',
+      name: '/damage_detects',
       type: "std_msgs/String",
       reconnectOnClose: true,
       queueSize: 10,
       queueLength: 10,
     );
+    bat_state_request = Topic(
+        ros: ros,
+        name: '/bat_state_request',
+        type: "std_msgs/String",
+        reconnectOnClose: true,
+        queueLength: 10,
+        queueSize: 10);
+    hours_cleaned_request = Topic(
+        ros: ros,
+        name: '/hours_cleaned_request',
+        type: "std_msgs/String",
+        reconnectOnClose: true,
+        queueLength: 10,
+        queueSize: 10);
+    damage_detects_request = Topic(
+        ros: ros,
+        name: '/damage_detects_request',
+        type: "std_msgs/String",
+        reconnectOnClose: true,
+        queueLength: 10,
+        queueSize: 10);
     super.initState();
     mymethod();
     //initConnection();
@@ -65,6 +102,15 @@ class _thirdPageState extends State<thirdPage> {
 
   void initConnection() async {
     ros.connect();
+    await bat_state_request.advertise();
+    var msg = {'data': 'battery_state_requesting '};
+    await bat_state_request.publish(msg);
+    await hours_cleaned_request.advertise();
+    var msg2 = {'data': 'hours_cleaned_requesting '};
+    await hours_cleaned_request.publish(msg2);
+    await damage_detects_request.advertise();
+    var msg3 = {'data': 'damage_detects_requesting '};
+    await damage_detects_request.publish(msg3);
     await damage_detects.subscribe(subscribeHandler1);
     await hours_cleaned.subscribe(subscribeHandler2);
     await battery_state.subscribe(subscribeHandler3);
@@ -74,21 +120,36 @@ class _thirdPageState extends State<thirdPage> {
   }
 
 //store topics details in strings
-  String damage_details = '';
-  String cleaning_hours = '';
-  String battery_status = '';
+
   Future<void> subscribeHandler1(Map<String, dynamic> msg) async {
-    damage_details = json.encode(msg);
+    //msg = {'data': '12'};
+    damage_details = msg['data'];
+    choices[2] = Choice(
+        title: 'Damage Detection :',
+        icon: Icons.cameraswitch_rounded,
+        details: damage_details);
+    print(damage_details);
+    //print(msg['data']);
     setState(() {});
   }
 
   Future<void> subscribeHandler2(Map<String, dynamic> msg) async {
-    cleaning_hours = json.encode(msg);
+    //msg = {'data': '12'};
+    cleaning_hours = msg['data'];
+    choices[0] = Choice(
+        title: 'Hours Taken :',
+        icon: Icons.access_alarm,
+        details: cleaning_hours);
     setState(() {});
   }
 
   Future<void> subscribeHandler3(Map<String, dynamic> msg) async {
-    battery_status = json.encode(msg);
+    //msg = {'data': '15'};
+    battery_status = msg['data'];
+    choices[1] = Choice(
+        title: 'Battery Level :',
+        icon: Icons.battery_charging_full,
+        details: battery_status);
     setState(() {});
   }
 
@@ -241,8 +302,7 @@ class _thirdPageState extends State<thirdPage> {
                                             snapshot.data == Status.connected
                                                 ? Colors.green[300]
                                                 : Colors.grey[300],
-                                        onPressed: () {
-                                          //print(snapshot.data);
+                                        onPressed: () async {
                                           if (snapshot.data !=
                                               Status.connected) {
                                             this.initConnection();
@@ -313,16 +373,12 @@ class _thirdPageState extends State<thirdPage> {
 }
 
 class Choice {
-  const Choice({required this.title, required this.icon});
+  const Choice(
+      {required this.title, required this.icon, required this.details});
   final String title;
   final IconData icon;
+  final String details;
 }
-
-const List<Choice> choices = const <Choice>[
-  const Choice(title: 'Hours Taken :', icon: Icons.access_alarm),
-  const Choice(title: 'Battery Level :', icon: Icons.battery_charging_full),
-  const Choice(title: 'Damage Detection :', icon: Icons.cameraswitch_rounded),
-];
 
 class SelectCard extends StatelessWidget {
   const SelectCard({Key? key, required this.choice}) : super(key: key);
@@ -340,7 +396,7 @@ class SelectCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Expanded(child: Icon(choice.icon, size: 50.0)),
-                Text(choice.title),
+                Text(choice.title + choice.details),
               ]),
         ));
   }
