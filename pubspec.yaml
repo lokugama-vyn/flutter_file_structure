@@ -46,6 +46,7 @@ dependencies:
   cloud_firestore: ^4.3.1
   roslibdart: 
   get: ^4.6.5
+  web_socket_channel: ^2.3.0
   
   
   
