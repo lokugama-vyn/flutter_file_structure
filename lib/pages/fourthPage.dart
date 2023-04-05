@@ -61,13 +61,10 @@ class _fourthPageState extends State<fourthPage> {
 
   void initConnection() async {
     ros.connect();
-    //await forward.subscribe(); //advertise?
-    await forward.advertise();
 
+    await forward.advertise();
     await right.advertise();
     await left.advertise();
-    //just for testing
-
     await reverse.advertise();
     await stop.advertise();
     setState(() {});
