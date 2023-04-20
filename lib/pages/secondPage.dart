@@ -34,7 +34,7 @@ class _SecondPageState extends State<SecondPage> {
   late Topic _drycleanMsg;
   late Topic _wetcleanMsg;
   void initState() {
-    ros = Ros(url: 'ws://10.10.22.249:9090');
+    ros = Ros(url: 'wss://solarpanelcleaningrobot.pagekite.me/');
     _drycleanMsg = Topic(
         ros: ros,
         name: '/topic',
