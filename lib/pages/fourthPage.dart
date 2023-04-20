@@ -14,6 +14,13 @@ class _fourthPageState extends State<fourthPage> {
   late Topic stop;
   late Topic right;
   late Topic left;
+  //added states to recognize pressed buttons
+  bool forwardState = false;
+  bool reverseState = false;
+  bool rightState = false;
+  bool leftState = false;
+  bool movingState = false;
+
   @override
   void initState() {
     ros = Ros(url: 'wss://solarpanelcleaningrobot.pagekite.me/');
@@ -71,6 +78,15 @@ class _fourthPageState extends State<fourthPage> {
   }
 
   void forward_func() async {
+    //change code to continously press button
+    setState(() {
+      forwardState = true;
+      reverseState = false;
+      rightState = false;
+      leftState = false;
+      movingState = true;
+    });
+
     var linear = {'x': 0.5, 'y': 0.0, 'z': 0.0};
     var angular = {'x': 0.0, 'y': 0.0, 'z': 0.5};
     var msg = {'linear': linear, 'angular': angular};
@@ -84,6 +100,14 @@ class _fourthPageState extends State<fourthPage> {
   }
 
   void reverse_func() async {
+    setState(() {
+      forwardState = false;
+      reverseState = true;
+      rightState = false;
+      leftState = false;
+      movingState = true;
+    });
+
     var linear = {'x': 0.5, 'y': 0.0, 'z': 0.0};
     var angular = {'x': 0.0, 'y': 0.0, 'z': 0.5};
     var twist = {'linear': linear, 'angular': angular};
@@ -97,6 +121,14 @@ class _fourthPageState extends State<fourthPage> {
   }
 
   void right_func() async {
+    setState(() {
+      forwardState = false;
+      reverseState = false;
+      rightState = true;
+      leftState = false;
+      movingState = true;
+    });
+
     var linear = {'x': 0.5, 'y': 0.0, 'z': 0.0};
     var angular = {'x': 0.0, 'y': 0.0, 'z': 0.5};
     var twist = {'linear': linear, 'angular': angular};
@@ -109,6 +141,14 @@ class _fourthPageState extends State<fourthPage> {
   }
 
   void left_func() async {
+    setState(() {
+      forwardState = false;
+      reverseState = false;
+      rightState = false;
+      leftState = true;
+      movingState = true;
+    });
+
     var linear = {'x': 0.5, 'y': 0.0, 'z': 0.0};
     var angular = {'x': 0.0, 'y': 0.0, 'z': 0.5};
     var twist = {'linear': linear, 'angular': angular};
@@ -123,6 +163,14 @@ class _fourthPageState extends State<fourthPage> {
   }
 
   void stop_func() async {
+    setState(() {
+      forwardState = false;
+      reverseState = false;
+      rightState = false;
+      leftState = false;
+      movingState = false;
+    });
+
     var linear = {'x': 0.5, 'y': 0.0, 'z': 0.0};
     var angular = {'x': 0.0, 'y': 0.0, 'z': 0.5};
     var twist = {'linear': linear, 'angular': angular};
@@ -199,6 +247,7 @@ class _fourthPageState extends State<fourthPage> {
                   children: <Widget>[
                     _buildControlButton(
                       icon: Icons.arrow_upward,
+                      pressed: forwardState,
                       onPressed: () {
                         forward_func();
                         // Send command to robot to move forward
@@ -214,6 +263,7 @@ class _fourthPageState extends State<fourthPage> {
                   children: <Widget>[
                     _buildControlButton(
                       icon: Icons.arrow_back,
+                      pressed: leftState,
                       onPressed: () {
                         //print('done publihsed');
                         left_func();
@@ -229,6 +279,7 @@ class _fourthPageState extends State<fourthPage> {
                     ),
                     _buildControlButton(
                       icon: Icons.arrow_forward,
+                      pressed: rightState,
                       onPressed: () {
                         right_func();
                         // Send command to robot to turn right
@@ -244,6 +295,7 @@ class _fourthPageState extends State<fourthPage> {
                   children: <Widget>[
                     _buildControlButton(
                       icon: Icons.arrow_downward,
+                      pressed: reverseState,
                       onPressed: () {
                         reverse_func();
                         // Send command to robot to move in reverse
@@ -259,12 +311,13 @@ class _fourthPageState extends State<fourthPage> {
     );
   }
 
-  Widget _buildControlButton({IconData? icon, Function? onPressed}) {
+  Widget _buildControlButton(
+      {IconData? icon, Function? onPressed, bool pressed = false}) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          primary: Colors.green,
+          primary: pressed ? Color.fromARGB(255, 2, 77, 5) : Colors.green,
           onPrimary: Colors.white,
           shadowColor: Colors.greenAccent,
           elevation: 3,
