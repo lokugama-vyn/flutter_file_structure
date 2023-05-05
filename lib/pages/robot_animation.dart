@@ -1,4 +1,9 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_file_structure/controllers/controller.dart';
+import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 
 class RobotAnimation extends StatefulWidget {
   const RobotAnimation({
@@ -15,92 +20,34 @@ class RobotAnimation extends StatefulWidget {
 
 class _RobotAnimationState extends State<RobotAnimation>
     with TickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<Offset> _animation;
-
-  final double _gridSize = 20;
-  late int _gridRowCount = 4;
-  late int _gridColumnCount = 5;
-  int _currentRow = 0;
-  int _currentColumn = 0;
-  int _currentColumnUpdate = 0;
-  double gridcellLenght = 0;
+  Controller controller = Get.find();
 
   bool forwarddirection = true;
   @override
   void initState() {
-    _gridRowCount = int.parse(widget.horizontal);
-    _gridColumnCount = int.parse(widget.vertical);
-    super.initState();
-
-    _animationController = AnimationController(
+    controller.animationController = AnimationController(
       vsync: this,
       duration: Duration(seconds: 1),
     );
 
-    _animation = Tween<Offset>(
-      begin: Offset(_currentColumn.toDouble(), _currentRow.toDouble()),
-      end: Offset(_currentColumn.toDouble(), _currentRow.toDouble()),
-    ).animate(_animationController);
+    controller.animation = Tween<Offset>(
+      begin: Offset(controller.currentColumn.value.toDouble(),
+          controller.currentRow.value.toDouble()),
+      end: Offset(controller.currentColumn.value.toDouble(),
+          controller.currentRow.value.toDouble()),
+    ).animate(controller.animationController);
+    callmethod();
+    super.initState();
+  }
+
+  void callmethod() {
+    controller.method(controller.deviceSize.value);
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
+    controller.animationController.dispose();
     super.dispose();
-  }
-
-  void method() {
-    setState(() {
-      if (forwarddirection) {
-        gridcellLenght = gridcellLenght +
-            ((MediaQuery.of(context).size.width - 50) / _gridColumnCount) / 10;
-        _currentColumnUpdate = _currentColumnUpdate + 1;
-
-        if (_currentColumnUpdate == _gridColumnCount) {
-          setState(() {
-            _currentRow++;
-            forwarddirection = !forwarddirection;
-            _currentColumnUpdate = -1;
-          });
-
-          //print(_currentColumnUpdate.toString() + " " + _currentRow.toString());
-
-        } else {
-          _animation = Tween<Offset>(
-            begin:
-                Offset(_currentColumnUpdate.toDouble(), _currentRow.toDouble()),
-            end: Offset(gridcellLenght, 0),
-          ).animate(_animationController);
-        }
-        _animationController.forward();
-        setState(() {});
-      } else {
-        gridcellLenght = gridcellLenght -
-            ((MediaQuery.of(context).size.width - 50) / _gridColumnCount) / 10;
-        _currentColumnUpdate = _currentColumnUpdate + 1;
-
-        if (_currentColumnUpdate == _gridColumnCount) {
-          setState(() {
-            _currentRow++;
-            forwarddirection = !forwarddirection;
-            _currentColumnUpdate = -1;
-          });
-
-          //print(_currentColumnUpdate.toString() + " " + _currentRow.toString());
-
-        } else {
-          _animation = Tween<Offset>(
-            begin:
-                Offset(_currentColumnUpdate.toDouble(), _currentRow.toDouble()),
-            end: Offset(gridcellLenght, 0),
-          ).animate(_animationController);
-        }
-        _animationController.forward();
-        setState(() {});
-      }
-    });
-    //print(gridcellLenght);
   }
 
   @override
@@ -109,58 +56,65 @@ class _RobotAnimationState extends State<RobotAnimation>
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          Container(
-            padding: EdgeInsets.all(25),
-            child: SingleChildScrollView(
-              child: GridView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: _gridRowCount * _gridColumnCount,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: _gridColumnCount,
-                ),
-                itemBuilder: (context, index) {
-                  final rowIndex = (index / _gridColumnCount).floor();
-                  final colIndex = index % _gridColumnCount;
+          Padding(
+            padding: const EdgeInsets.only(top: 25),
+            child: Container(
+              padding: EdgeInsets.all(25),
+              child: SingleChildScrollView(
+                child: Obx(
+                  () => GridView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: controller.gridRowCount.value *
+                        controller.gridColumnCount.value,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: controller.gridColumnCount.value,
+                    ),
+                    itemBuilder: (context, index) {
+                      final rowIndex =
+                          (index / controller.gridColumnCount.value).floor();
+                      final colIndex = index % controller.gridColumnCount.value;
 
-                  return Container(
-                    width: _gridSize,
-                    height: _gridSize,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white),
-                    ),
-                    child: Stack(
-                      children: [
-                        if (rowIndex == _currentRow &&
-                            colIndex == _currentColumn)
-                          SlideTransition(
-                            position: _animation,
-                            child: Column(children: <Widget>[
-                              CircleAvatar(
-                                radius:
-                                    5, // change the radius as per your requirement
-                                backgroundColor: Colors.red,
-                                // change the color as per your requirement
-                                // add child widget if needed
-                              )
-                            ]),
-                          ),
-                      ],
-                    ),
-                  );
-                },
+                      return Container(
+                        width: controller.gridSize.value,
+                        height: controller.gridSize.value,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white),
+                        ),
+                        child: Stack(
+                          children: [
+                            if (rowIndex == controller.currentRow.value &&
+                                colIndex == controller.currentColumn.value)
+                              SlideTransition(
+                                position: controller.animation,
+                                child: Column(children: <Widget>[
+                                  CircleAvatar(
+                                    radius:
+                                        5, // change the radius as per your requirement
+                                    backgroundColor: Colors.red,
+                                    // change the color as per your requirement
+                                    // add child widget if needed
+                                  )
+                                ]),
+                              ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
             ),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.purple,
-            ),
-            onPressed: method,
-            child: Text(
-              "Process Started",
-            ),
-          ),
+          // ElevatedButton(
+          //   style: ElevatedButton.styleFrom(
+          //     backgroundColor: Colors.purple,
+          //   ),
+          //   onPressed: method,
+          //   child: Text(
+          //     "Process Started",
+          //   ),
+          // ),
         ],
       ),
     );

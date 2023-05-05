@@ -4,8 +4,10 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_file_structure/controllers/controller.dart';
 
 import 'package:flutter_file_structure/pages/robot_animation.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:roslibdart/roslibdart.dart';
 
@@ -164,13 +166,15 @@ class _thirdPageState extends State<thirdPage> {
     setState(() {});
   }
 
-  late int? verticle;
-  late int? horizontal;
+  int? verticle = null;
+  int? horizontal = null;
   Future<void> mymethod() async {
     final prefs = await SharedPreferences.getInstance();
+    Controller controller = Get.find();
+
     setState(() {
-      verticle = prefs.getInt('verticalpanels');
-      horizontal = prefs.getInt('horizontalpanels');
+      verticle = controller.verticle.value;
+      horizontal = controller.horizontal.value;
     });
     //print(vertical.toString() + " " + horizontal.toString());
   }
@@ -247,122 +251,125 @@ class _thirdPageState extends State<thirdPage> {
                     ],
                   ),
                 ),
-                Container(
-                  height: MediaQuery.of(context).size.height - 130,
-                  child: LayoutBuilder(builder: (context, constraints) {
-                    if (selectedTab == 1) {
-                      return Container(
-                        decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                              Color.fromARGB(255, 203, 43, 147),
-                              Color.fromARGB(255, 149, 70, 196),
-                              Color.fromARGB(255, 94, 97, 244),
-                            ])),
-                        child: MaterialApp(
-                          home: RobotAnimation(
-                              vertical: verticle.toString(),
-                              horizontal: horizontal.toString()),
-                        ),
-                      );
-                    } else {
-                      return Container(
-                        decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                              Color.fromARGB(255, 203, 43, 147),
-                              Color.fromARGB(255, 149, 70, 196),
-                              Color.fromARGB(255, 94, 97, 244),
-                            ])),
-                        child: Scaffold(
-                          backgroundColor: Colors.transparent,
-                          body: Padding(
-                            padding: const EdgeInsets.only(left: 15, right: 15),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Padding(
-                                  padding: EdgeInsets.only(right: 15),
-                                ),
-                                Expanded(
-                                  // Added
-                                  child: Container(
-                                      child: Column(
-                                    children: [
-                                      ActionChip(
-                                        label: Text(
-                                            snapshot.data == Status.connected
-                                                ? 'DISCONNECT'
-                                                : 'CONNECT'),
-                                        backgroundColor:
-                                            snapshot.data == Status.connected
-                                                ? Colors.green[300]
-                                                : Colors.grey[300],
-                                        onPressed: () async {
-                                          if (snapshot.data !=
-                                              Status.connected) {
-                                            this.initConnection();
-                                          } else {
-                                            this.destroyConnection();
-                                          }
-                                        },
+                (verticle == null || horizontal == null)
+                    ? Container()
+                    : Container(
+                        height: MediaQuery.of(context).size.height - 130,
+                        child: LayoutBuilder(builder: (context, constraints) {
+                          if (selectedTab == 1) {
+                            return Container(
+                              decoration: const BoxDecoration(
+                                  gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                    Color.fromARGB(255, 203, 43, 147),
+                                    Color.fromARGB(255, 149, 70, 196),
+                                    Color.fromARGB(255, 94, 97, 244),
+                                  ])),
+                              child: RobotAnimation(
+                                  vertical: verticle.toString(),
+                                  horizontal: horizontal.toString()),
+                            );
+                          } else {
+                            return Container(
+                              decoration: const BoxDecoration(
+                                  gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                    Color.fromARGB(255, 203, 43, 147),
+                                    Color.fromARGB(255, 149, 70, 196),
+                                    Color.fromARGB(255, 94, 97, 244),
+                                  ])),
+                              child: Scaffold(
+                                backgroundColor: Colors.transparent,
+                                body: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 15, right: 15),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Padding(
+                                        padding: EdgeInsets.only(right: 15),
                                       ),
                                       Expanded(
-                                        child: GridView.count(
-                                          crossAxisCount: 3,
-                                          crossAxisSpacing: 4.0,
-                                          mainAxisSpacing: 8.0,
-                                          children: List.generate(
-                                              choices.length, (index) {
-                                            return Center(
-                                              child: SelectCard(
-                                                  choice: choices[index]),
-                                            );
-                                          }),
-                                        ),
-
                                         // Added
+                                        child: Container(
+                                            child: Column(
+                                          children: [
+                                            ActionChip(
+                                              label: Text(snapshot.data ==
+                                                      Status.connected
+                                                  ? 'DISCONNECT'
+                                                  : 'CONNECT'),
+                                              backgroundColor: snapshot.data ==
+                                                      Status.connected
+                                                  ? Colors.green[300]
+                                                  : Colors.grey[300],
+                                              onPressed: () async {
+                                                if (snapshot.data !=
+                                                    Status.connected) {
+                                                  this.initConnection();
+                                                } else {
+                                                  this.destroyConnection();
+                                                }
+                                              },
+                                            ),
+                                            Expanded(
+                                              child: GridView.count(
+                                                crossAxisCount: 3,
+                                                crossAxisSpacing: 4.0,
+                                                mainAxisSpacing: 8.0,
+                                                children: List.generate(
+                                                    choices.length, (index) {
+                                                  return Center(
+                                                    child: SelectCard(
+                                                        choice: choices[index]),
+                                                  );
+                                                }),
+                                              ),
+
+                                              // Added
+                                            ),
+                                          ],
+                                        )),
                                       ),
+                                      Container(
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height -
+                                              280,
+                                          width: double.infinity,
+                                          padding: EdgeInsets.only(
+                                              top: 15, bottom: 10),
+                                          child: damage
+                                              ? Container(
+                                                  decoration: BoxDecoration(
+                                                    image: DecorationImage(
+                                                      image: AssetImage(
+                                                          'assets/images/caution.jpg'),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )
+                                              : Container(
+                                                  decoration: BoxDecoration(
+                                                    image: DecorationImage(
+                                                      image: AssetImage(
+                                                          'assets/images/robot.jpg'),
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  ),
+                                                )),
                                     ],
-                                  )),
+                                  ),
                                 ),
-                                Container(
-                                    height: MediaQuery.of(context).size.height -
-                                        280,
-                                    width: double.infinity,
-                                    padding:
-                                        EdgeInsets.only(top: 15, bottom: 10),
-                                    child: damage
-                                        ? Container(
-                                            decoration: BoxDecoration(
-                                              image: DecorationImage(
-                                                image: AssetImage(
-                                                    'assets/images/caution.jpg'),
-                                                fit: BoxFit.fill,
-                                              ),
-                                            ),
-                                          )
-                                        : Container(
-                                            decoration: BoxDecoration(
-                                              image: DecorationImage(
-                                                image: AssetImage(
-                                                    'assets/images/robot.jpg'),
-                                                fit: BoxFit.fill,
-                                              ),
-                                            ),
-                                          )),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    }
-                  }),
-                )
+                              ),
+                            );
+                          }
+                        }),
+                      )
               ],
             ),
           ),

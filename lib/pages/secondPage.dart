@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_file_structure/controllers/controller.dart';
 
 import 'package:flutter_file_structure/pages/thirdPage.dart';
 import 'package:flutter_file_structure/sidebar/sidebar_layout.dart';
+import 'package:get/get.dart';
 import 'package:roslibdart/roslibdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -244,7 +246,14 @@ class _SecondPageState extends State<SecondPage> {
                             int.parse(hPanelController.text));
                         await prefs.setInt(
                             'verticalpanels', int.parse(vPanelController.text));
-
+                        Controller controller = Get.find();
+                        controller.verticle.value =
+                            int.parse(vPanelController.text);
+                        controller.horizontal.value =
+                            int.parse(hPanelController.text);
+                        controller.initializeAnimation();
+                        controller.deviceSize.value =
+                            MediaQuery.of(context).size;
                         FocusScopeNode currentFocus = FocusScope.of(context);
                         Navigator.of(context).push(
                           MaterialPageRoute<void>(
@@ -253,7 +262,7 @@ class _SecondPageState extends State<SecondPage> {
                         );
                       }
                     },
-                    child: const Text('Submit'),
+                    child: const Text('Start'),
                   ),
                 ),
               ],
