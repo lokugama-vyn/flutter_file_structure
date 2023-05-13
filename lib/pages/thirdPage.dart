@@ -268,8 +268,7 @@ class _thirdPageState extends State<thirdPage> {
                                     Color.fromARGB(255, 94, 97, 244),
                                   ])),
                               child: RobotAnimation(
-                                  vertical: verticle.toString(),
-                                  horizontal: horizontal.toString()),
+                                  currentRow: 2, currentColumn: 3),
                             );
                           } else {
                             return Container(

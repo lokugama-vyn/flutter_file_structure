@@ -1,121 +1,71 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_file_structure/controllers/controller.dart';
-import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 
 class RobotAnimation extends StatefulWidget {
-  const RobotAnimation({
-    super.key,
-    required this.vertical,
-    required this.horizontal,
-  });
-  final String vertical;
-  final String horizontal;
+  final int currentRow;
+  final int currentColumn;
+
+  RobotAnimation({required this.currentRow, required this.currentColumn});
 
   @override
   _RobotAnimationState createState() => _RobotAnimationState();
 }
 
-class _RobotAnimationState extends State<RobotAnimation>
-    with TickerProviderStateMixin {
-  Controller controller = Get.find();
+class _RobotAnimationState extends State<RobotAnimation> {
+  late int currentRow;
+  late int currentColumn;
 
-  bool forwarddirection = true;
   @override
   void initState() {
-    controller.animationController = AnimationController(
-      vsync: this,
-      duration: Duration(seconds: 1),
-    );
-
-    controller.animation = Tween<Offset>(
-      begin: Offset(controller.currentColumn.value.toDouble(),
-          controller.currentRow.value.toDouble()),
-      end: Offset(controller.currentColumn.value.toDouble(),
-          controller.currentRow.value.toDouble()),
-    ).animate(controller.animationController);
-    callmethod();
     super.initState();
+    currentRow = widget.currentRow;
+    currentColumn = widget.currentColumn;
   }
 
-  void callmethod() {
-    controller.method(controller.deviceSize.value);
-  }
-
-  @override
-  void dispose() {
-    controller.animationController.dispose();
-    super.dispose();
+  void moveAvatar(int newRow, int newColumn) {
+    setState(() {
+      currentRow = newRow;
+      currentColumn = newColumn;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 25),
-            child: Container(
-              padding: EdgeInsets.all(25),
-              child: SingleChildScrollView(
-                child: Obx(
-                  () => GridView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: controller.gridRowCount.value *
-                        controller.gridColumnCount.value,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: controller.gridColumnCount.value,
-                    ),
-                    itemBuilder: (context, index) {
-                      final rowIndex =
-                          (index / controller.gridColumnCount.value).floor();
-                      final colIndex = index % controller.gridColumnCount.value;
-
-                      return Container(
-                        width: controller.gridSize.value,
-                        height: controller.gridSize.value,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.white),
-                        ),
-                        child: Stack(
-                          children: [
-                            if (rowIndex == controller.currentRow.value &&
-                                colIndex == controller.currentColumn.value)
-                              SlideTransition(
-                                position: controller.animation,
-                                child: Column(children: <Widget>[
-                                  CircleAvatar(
-                                    radius:
-                                        5, // change the radius as per your requirement
-                                    backgroundColor: Colors.red,
-                                    // change the color as per your requirement
-                                    // add child widget if needed
-                                  )
-                                ]),
-                              ),
-                          ],
-                        ),
-                      );
-                    },
+    return Container(
+      color: Colors.black,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: GridView.builder(
+            itemCount: 25,
+            gridDelegate:
+                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),
+            itemBuilder: (context, index) {
+              if (index == (currentRow * 5) + currentColumn) {
+                // This is the avatar
+                return GestureDetector(
+                  onTap: () {
+                    // Move the avatar to a new position when tapped
+                    moveAvatar((index / 5).floor(), index % 5);
+                  },
+                  child: CircleAvatar(
+                    backgroundColor: Colors.green,
+                    child: Text('cleaning'),
                   ),
-                ),
-              ),
-            ),
+                );
+              } else {
+                // This is an empty grid cell
+                return Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 1.0,
+                    ),
+                  ),
+                );
+              }
+            },
           ),
-          // ElevatedButton(
-          //   style: ElevatedButton.styleFrom(
-          //     backgroundColor: Colors.purple,
-          //   ),
-          //   onPressed: method,
-          //   child: Text(
-          //     "Process Started",
-          //   ),
-          // ),
-        ],
+        ),
       ),
     );
   }
