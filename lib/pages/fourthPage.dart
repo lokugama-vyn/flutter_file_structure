@@ -1,5 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_file_structure/controllers/controller.dart';
+import 'package:get/get.dart';
 import 'package:roslibdart/roslibdart.dart';
 
 class fourthPage extends StatefulWidget {

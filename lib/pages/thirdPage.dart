@@ -24,7 +24,6 @@ class thirdPage extends StatefulWidget {
 }
 
 class _thirdPageState extends State<thirdPage> {
-  late Ros ros;
   late Topic battery_state;
   late Topic hours_cleaned;
   late Topic damage_detects;
@@ -48,12 +47,13 @@ class _thirdPageState extends State<thirdPage> {
         icon: Icons.cameraswitch_rounded,
         details: ''),
   ];
+  Controller controller = Get.find();
   @override
   void initState() {
     // TODO: implement initState
-    ros = Ros(url: 'wss://solarpanelcleaningrobot.pagekite.me/');
+
     battery_state = Topic(
-      ros: ros,
+      ros: controller.ros.value,
       name: '/battery_state',
       type: "std_msgs/String",
       reconnectOnClose: true,
@@ -61,7 +61,7 @@ class _thirdPageState extends State<thirdPage> {
       queueLength: 10,
     );
     hours_cleaned = Topic(
-      ros: ros,
+      ros: controller.ros.value,
       name: '/hours_cleaned',
       type: "std_msgs/String",
       reconnectOnClose: true,
@@ -69,7 +69,7 @@ class _thirdPageState extends State<thirdPage> {
       queueLength: 10,
     );
     damage_detects = Topic(
-      ros: ros,
+      ros: controller.ros.value,
       name: '/damage_detects',
       type: "std_msgs/String",
       reconnectOnClose: true,
@@ -77,21 +77,21 @@ class _thirdPageState extends State<thirdPage> {
       queueLength: 10,
     );
     bat_state_request = Topic(
-        ros: ros,
+        ros: controller.ros.value,
         name: '/bat_state_request',
         type: "std_msgs/String",
         reconnectOnClose: true,
         queueLength: 10,
         queueSize: 10);
     hours_cleaned_request = Topic(
-        ros: ros,
+        ros: controller.ros.value,
         name: '/hours_cleaned_request',
         type: "std_msgs/String",
         reconnectOnClose: true,
         queueLength: 10,
         queueSize: 10);
     damage_detects_request = Topic(
-        ros: ros,
+        ros: controller.ros.value,
         name: '/damage_detects_request',
         type: "std_msgs/String",
         reconnectOnClose: true,
@@ -103,7 +103,7 @@ class _thirdPageState extends State<thirdPage> {
   }
 
   void initConnection() async {
-    ros.connect();
+    controller.rosConnect();
     await bat_state_request.advertise();
     var msg = {'data': 'battery_state_requesting '};
     await bat_state_request.publish(msg);
@@ -162,7 +162,7 @@ class _thirdPageState extends State<thirdPage> {
     await hours_cleaned.unsubscribe();
     await battery_state.unsubscribe();
 
-    await ros.close();
+    await controller.ros.value.close();
     setState(() {});
   }
 
@@ -203,7 +203,7 @@ class _thirdPageState extends State<thirdPage> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return StreamBuilder<Object>(
-      stream: ros.statusStream,
+      stream: controller.ros.value.statusStream,
       builder: (context, snapshot) {
         return Scaffold(
           appBar: AppBar(
@@ -267,8 +267,7 @@ class _thirdPageState extends State<thirdPage> {
                                     Color.fromARGB(255, 149, 70, 196),
                                     Color.fromARGB(255, 94, 97, 244),
                                   ])),
-                              child: RobotAnimation(
-                                  currentRow: 2, currentColumn: 3),
+                              child: RobotAnimation(),
                             );
                           } else {
                             return Container(

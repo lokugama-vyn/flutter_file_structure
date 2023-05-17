@@ -1,31 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../controllers/controller.dart';
 
 class RobotAnimation extends StatefulWidget {
-  final int currentRow;
-  final int currentColumn;
-
-  RobotAnimation({required this.currentRow, required this.currentColumn});
+  const RobotAnimation({super.key});
 
   @override
   _RobotAnimationState createState() => _RobotAnimationState();
 }
 
 class _RobotAnimationState extends State<RobotAnimation> {
-  late int currentRow;
-  late int currentColumn;
-
+  Controller controller = Get.find();
   @override
   void initState() {
     super.initState();
-    currentRow = widget.currentRow;
-    currentColumn = widget.currentColumn;
-  }
-
-  void moveAvatar(int newRow, int newColumn) {
-    setState(() {
-      currentRow = newRow;
-      currentColumn = newColumn;
-    });
   }
 
   @override
@@ -35,35 +24,34 @@ class _RobotAnimationState extends State<RobotAnimation> {
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: GridView.builder(
-            itemCount: 25,
-            gridDelegate:
-                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5),
-            itemBuilder: (context, index) {
-              if (index == (currentRow * 5) + currentColumn) {
-                // This is the avatar
-                return GestureDetector(
-                  onTap: () {
-                    // Move the avatar to a new position when tapped
-                    moveAvatar((index / 5).floor(), index % 5);
-                  },
-                  child: CircleAvatar(
+          child: Obx(
+            () => GridView.builder(
+              itemCount:
+                  controller.horizontal.value * controller.verticle.value,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: controller.verticle.value),
+              itemBuilder: (context, index) {
+                if (index ==
+                    (controller.currentRow.value * controller.verticle.value) +
+                        controller.currentColumn.value) {
+                  // This is the avatar
+                  return CircleAvatar(
                     backgroundColor: Colors.green,
-                    child: Text('cleaning'),
-                  ),
-                );
-              } else {
-                // This is an empty grid cell
-                return Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.white,
-                      width: 1.0,
+                    child: FittedBox(child: Text('cleaning')),
+                  );
+                } else {
+                  // This is an empty grid cell
+                  return Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 1,
+                      ),
                     ),
-                  ),
-                );
-              }
-            },
+                  );
+                }
+              },
+            ),
           ),
         ),
       ),

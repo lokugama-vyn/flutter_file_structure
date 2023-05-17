@@ -32,22 +32,23 @@ class _SecondPageState extends State<SecondPage> {
   String verticalPanels = "";
   bool vertical = false;
   //ros commands
-  late Ros ros;
+  Controller controller = Get.find();
   late Topic _drycleanMsg;
   late Topic _wetcleanMsg;
   void initState() {
-    ros = Ros(url: 'wss://solarpanelcleaningrobot.pagekite.me/');
+    controller.rosConnect;
+    controller.rowColumnListener();
     _drycleanMsg = Topic(
-        ros: ros,
-        name: '/topic',
+        ros: controller.ros.value,
+        name: '/_drycleanMsg',
         type: "std_msgs/bool",
         reconnectOnClose: true,
         queueLength: 10,
         queueSize: 10);
 
     _wetcleanMsg = Topic(
-        ros: ros,
-        name: '/topic',
+        ros: controller.ros.value,
+        name: '/ _wetcleanMsg',
         type: "std_msgs/bool",
         reconnectOnClose: true,
         queueLength: 10,
@@ -72,7 +73,7 @@ class _SecondPageState extends State<SecondPage> {
     await _drycleanMsg.unadvertise();
     await _wetcleanMsg.unadvertise();
 
-    await ros.close();
+    await controller.ros.value.close();
     setState(() {});
   }
 
@@ -251,9 +252,7 @@ class _SecondPageState extends State<SecondPage> {
                             int.parse(vPanelController.text);
                         controller.horizontal.value =
                             int.parse(hPanelController.text);
-                        controller.initializeAnimation();
-                        controller.deviceSize.value =
-                            MediaQuery.of(context).size;
+
                         FocusScopeNode currentFocus = FocusScope.of(context);
                         Navigator.of(context).push(
                           MaterialPageRoute<void>(
