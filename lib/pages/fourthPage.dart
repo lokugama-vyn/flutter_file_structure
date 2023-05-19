@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_file_structure/controllers/controller.dart';
 import 'package:get/get.dart';
 import 'package:roslibdart/roslibdart.dart';
+import 'package:vibration/vibration.dart';
 
 class fourthPage extends StatefulWidget {
   @override
@@ -88,7 +89,7 @@ class _fourthPageState extends State<fourthPage> {
       leftState = false;
       movingState = true;
     });
-
+    Vibration.vibrate(pattern: [500, 1000, 500, 2000], intensities: [1, 255]);
     var linear = {'x': 0.5, 'y': 0.0, 'z': 0.0};
     var angular = {'x': 0.0, 'y': 0.0, 'z': 0.5};
     var msg = {'linear': linear, 'angular': angular};
@@ -109,7 +110,7 @@ class _fourthPageState extends State<fourthPage> {
       leftState = false;
       movingState = true;
     });
-
+    Vibration.vibrate(pattern: [500, 1000, 500, 2000], intensities: [1, 255]);
     var linear = {'x': 0.5, 'y': 0.0, 'z': 0.0};
     var angular = {'x': 0.0, 'y': 0.0, 'z': 0.5};
     var twist = {'linear': linear, 'angular': angular};
@@ -130,7 +131,7 @@ class _fourthPageState extends State<fourthPage> {
       leftState = false;
       movingState = true;
     });
-
+    Vibration.vibrate(pattern: [500, 1000, 500, 2000], intensities: [1, 255]);
     var linear = {'x': 0.5, 'y': 0.0, 'z': 0.0};
     var angular = {'x': 0.0, 'y': 0.0, 'z': 0.5};
     var twist = {'linear': linear, 'angular': angular};
@@ -150,7 +151,7 @@ class _fourthPageState extends State<fourthPage> {
       leftState = true;
       movingState = true;
     });
-
+    Vibration.vibrate(pattern: [500, 1000, 500, 2000], intensities: [1, 255]);
     var linear = {'x': 0.5, 'y': 0.0, 'z': 0.0};
     var angular = {'x': 0.0, 'y': 0.0, 'z': 0.5};
     var twist = {'linear': linear, 'angular': angular};
@@ -172,7 +173,7 @@ class _fourthPageState extends State<fourthPage> {
       leftState = false;
       movingState = false;
     });
-
+    Vibration.vibrate(duration: 1000);
     var linear = {'x': 0.5, 'y': 0.0, 'z': 0.0};
     var angular = {'x': 0.0, 'y': 0.0, 'z': 0.5};
     var twist = {'linear': linear, 'angular': angular};

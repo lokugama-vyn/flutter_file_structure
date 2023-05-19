@@ -43,10 +43,7 @@ class _RobotAnimationState extends State<RobotAnimation> {
                   // This is an empty grid cell
                   return Container(
                     decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.white,
-                        width: 1,
-                      ),
+                      border: Border.all(color: Colors.white, width: 1),
                     ),
                   );
                 }

@@ -47,6 +47,7 @@ dependencies:
   roslibdart: 
   get: ^4.6.5
   web_socket_channel: ^2.3.0
+  vibration: ^1.7.7
   
   
   
