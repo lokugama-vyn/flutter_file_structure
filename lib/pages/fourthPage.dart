@@ -12,11 +12,8 @@ class fourthPage extends StatefulWidget {
 
 class _fourthPageState extends State<fourthPage> {
   late Ros ros;
-  late Topic forward;
-  late Topic reverse;
-  late Topic stop;
-  late Topic right;
-  late Topic left;
+  late Topic manualControl;
+
   //added states to recognize pressed buttons
   bool forwardState = false;
   bool reverseState = false;
@@ -27,44 +24,13 @@ class _fourthPageState extends State<fourthPage> {
   @override
   void initState() {
     ros = Ros(url: 'wss://solarpanelcleaningrobot.pagekite.me/');
-    forward = Topic(
+    manualControl = Topic(
         ros: ros,
-        name: '/forward',
-        type: "geometry_msgs/Twist",
+        name: '/manualControl',
+        type: "std_msgs/String",
         reconnectOnClose: true,
         queueLength: 10,
         queueSize: 10);
-
-    right = Topic(
-        ros: ros,
-        name: '/right',
-        type: "geometry_msgs/Twist",
-        reconnectOnClose: true,
-        queueLength: 10,
-        queueSize: 10);
-    reverse = Topic(
-        ros: ros,
-        name: '/reverse',
-        type: "geometry_msgs/Twist",
-        reconnectOnClose: true,
-        queueLength: 10,
-        queueSize: 10);
-
-    left = Topic(
-        ros: ros,
-        name: '/left',
-        type: "geometry_msgs/Twist",
-        reconnectOnClose: true,
-        queueLength: 10,
-        queueSize: 10);
-    stop = Topic(
-      ros: ros,
-      name: '/stop',
-      type: "geometry_msgs/Twist",
-      reconnectOnClose: true,
-      queueSize: 10,
-      queueLength: 10,
-    );
 
     super.initState();
   }
@@ -72,11 +38,8 @@ class _fourthPageState extends State<fourthPage> {
   void initConnection() async {
     ros.connect();
 
-    await forward.advertise();
-    await right.advertise();
-    await left.advertise();
-    await reverse.advertise();
-    await stop.advertise();
+    await manualControl.advertise();
+
     setState(() {});
   }
 
@@ -90,14 +53,9 @@ class _fourthPageState extends State<fourthPage> {
       movingState = true;
     });
     Vibration.vibrate(pattern: [500, 1000, 500, 2000], intensities: [1, 255]);
-    var linear = {'x': 0.5, 'y': 0.0, 'z': 0.0};
-    var angular = {'x': 0.0, 'y': 0.0, 'z': 0.5};
-    var msg = {'linear': linear, 'angular': angular};
 
-    //print('cmd published');
-
-    // var msg = {'data': 'go straight'};
-    await forward.publish(msg);
+    var msg = {'data': 'forward'};
+    await manualControl.publish(msg);
     print('cmd published');
     // print('done publihsed forward topic');
   }
@@ -111,10 +69,9 @@ class _fourthPageState extends State<fourthPage> {
       movingState = true;
     });
     Vibration.vibrate(pattern: [500, 1000, 500, 2000], intensities: [1, 255]);
-    var linear = {'x': 0.5, 'y': 0.0, 'z': 0.0};
-    var angular = {'x': 0.0, 'y': 0.0, 'z': 0.5};
-    var twist = {'linear': linear, 'angular': angular};
-    await reverse.publish(twist);
+
+    var msg = {'data': 'reverse'};
+    await manualControl.publish(msg);
     print('cmd published');
 
     // print('done publihsed2');
@@ -132,10 +89,8 @@ class _fourthPageState extends State<fourthPage> {
       movingState = true;
     });
     Vibration.vibrate(pattern: [500, 1000, 500, 2000], intensities: [1, 255]);
-    var linear = {'x': 0.5, 'y': 0.0, 'z': 0.0};
-    var angular = {'x': 0.0, 'y': 0.0, 'z': 0.5};
-    var twist = {'linear': linear, 'angular': angular};
-    await right.publish(twist);
+    var msg = {'data': 'right'};
+    await manualControl.publish(msg);
     print('cmd published');
 
     // var msg = {'data': 'turn right'};
@@ -152,10 +107,8 @@ class _fourthPageState extends State<fourthPage> {
       movingState = true;
     });
     Vibration.vibrate(pattern: [500, 1000, 500, 2000], intensities: [1, 255]);
-    var linear = {'x': 0.5, 'y': 0.0, 'z': 0.0};
-    var angular = {'x': 0.0, 'y': 0.0, 'z': 0.5};
-    var twist = {'linear': linear, 'angular': angular};
-    await left.publish(twist);
+    var msg = {'data': 'left'};
+    await manualControl.publish(msg);
     print('cmd published');
     // print('done publihsed');
     // await left.advertise();
@@ -174,10 +127,8 @@ class _fourthPageState extends State<fourthPage> {
       movingState = false;
     });
     Vibration.vibrate(duration: 1000);
-    var linear = {'x': 0.5, 'y': 0.0, 'z': 0.0};
-    var angular = {'x': 0.0, 'y': 0.0, 'z': 0.5};
-    var twist = {'linear': linear, 'angular': angular};
-    await stop.publish(twist);
+    var msg = {'data': 'stop'};
+    await manualControl.publish(msg);
     print('cmd published');
 
     // var msg = {'data': 'stop '};
@@ -187,11 +138,9 @@ class _fourthPageState extends State<fourthPage> {
 
   void destroyConnection() async {
     //await chatter.unsubscribe(); //forward unadvertise?
-    await stop.unadvertise();
-    await right.unadvertise();
-    await left.unadvertise();
-    await forward.unadvertise();
-    await reverse.unadvertise();
+
+    await manualControl.unadvertise();
+
     await ros.close();
     setState(() {});
   }
