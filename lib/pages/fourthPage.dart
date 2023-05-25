@@ -56,7 +56,7 @@ class _fourthPageState extends State<fourthPage> {
 
     var msg = {'data': 'forward'};
     await manualControl.publish(msg);
-    print('cmd published');
+    // print('cmd published');
     // print('done publihsed forward topic');
   }
 
@@ -72,7 +72,7 @@ class _fourthPageState extends State<fourthPage> {
 
     var msg = {'data': 'reverse'};
     await manualControl.publish(msg);
-    print('cmd published');
+    // print('cmd published');
 
     // print('done publihsed2');
     // var msg = {'data': 'turn reverse'};
@@ -91,7 +91,7 @@ class _fourthPageState extends State<fourthPage> {
     Vibration.vibrate(pattern: [500, 1000, 500, 2000], intensities: [1, 255]);
     var msg = {'data': 'right'};
     await manualControl.publish(msg);
-    print('cmd published');
+    // print('cmd published');
 
     // var msg = {'data': 'turn right'};
     // await right.publish(msg);
@@ -109,10 +109,8 @@ class _fourthPageState extends State<fourthPage> {
     Vibration.vibrate(pattern: [500, 1000, 500, 2000], intensities: [1, 255]);
     var msg = {'data': 'left'};
     await manualControl.publish(msg);
-    print('cmd published');
-    // print('done publihsed');
-    // await left.advertise();
-    // print('done publihsed2');
+    // print('cmd published');
+
     // var msg = {'data': 'turn left'};
     // await left.publish(msg);
     // print('done publihsed left topic');
@@ -129,7 +127,6 @@ class _fourthPageState extends State<fourthPage> {
     Vibration.vibrate(duration: 1000);
     var msg = {'data': 'stop'};
     await manualControl.publish(msg);
-    print('cmd published');
 
     // var msg = {'data': 'stop '};
     // await stop.publish(msg);
