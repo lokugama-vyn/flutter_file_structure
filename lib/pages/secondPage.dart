@@ -33,23 +33,15 @@ class _SecondPageState extends State<SecondPage> {
   bool vertical = false;
   //ros commands
   Controller controller = Get.find();
-  late Topic _drycleanMsg;
-  late Topic _wetcleanMsg;
+  late Topic powerOn;
+
   void initState() {
     controller.rosConnect;
     controller.rowColumnListener();
-    _drycleanMsg = Topic(
+    powerOn = Topic(
         ros: controller.ros.value,
-        name: '/_drycleanMsg',
-        type: "std_msgs/bool",
-        reconnectOnClose: true,
-        queueLength: 10,
-        queueSize: 10);
-
-    _wetcleanMsg = Topic(
-        ros: controller.ros.value,
-        name: '/ _wetcleanMsg',
-        type: "std_msgs/bool",
+        name: '/powerOn',
+        type: "std_msgs/String",
         reconnectOnClose: true,
         queueLength: 10,
         queueSize: 10);
@@ -59,19 +51,18 @@ class _SecondPageState extends State<SecondPage> {
 
 //need to add ros.connect() and advertisng topics method like initconnection
   void _dryClean() async {
-    bool _dryclean = true;
-    await _drycleanMsg.publish(_dryclean);
+    var msg1 = {'data': 'dry'};
+    await powerOn.publish(msg1);
   }
 
   void _wetClean() async {
-    bool _wetclean = true;
-    await _wetcleanMsg.publish(_wetclean);
+    var msg2 = {'data': 'wet'};
+    await powerOn.publish(msg2);
   }
 
   void destroyConnection() async {
     //await chatter.unsubscribe(); //forward unadvertise?
-    await _drycleanMsg.unadvertise();
-    await _wetcleanMsg.unadvertise();
+    await powerOn.unadvertise();
 
     await controller.ros.value.close();
     setState(() {});
