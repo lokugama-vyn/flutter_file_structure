@@ -7,6 +7,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_file_structure/controllers/controller.dart';
 
 import 'package:flutter_file_structure/pages/robot_animation.dart';
+import 'package:flutter_file_structure/pages/secondPage.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:roslibdart/roslibdart.dart';
@@ -37,7 +38,7 @@ class _thirdPageState extends State<thirdPage> {
   String cleaning_hours = '';
   String battery_status = '';
   List<Choice> choices = <Choice>[
-    Choice(title: 'Hours Taken :', icon: Icons.access_alarm, details: ''),
+    Choice(title: 'Time Taken :', icon: Icons.access_alarm, details: ''),
     Choice(
         title: 'Battery Level :',
         icon: Icons.battery_charging_full,
@@ -76,27 +77,27 @@ class _thirdPageState extends State<thirdPage> {
       queueSize: 10,
       queueLength: 10,
     );
-    bat_state_request = Topic(
-        ros: controller.ros.value,
-        name: '/bat_state_request',
-        type: "std_msgs/String",
-        reconnectOnClose: true,
-        queueLength: 10,
-        queueSize: 10);
-    hours_cleaned_request = Topic(
-        ros: controller.ros.value,
-        name: '/hours_cleaned_request',
-        type: "std_msgs/String",
-        reconnectOnClose: true,
-        queueLength: 10,
-        queueSize: 10);
-    damage_detects_request = Topic(
-        ros: controller.ros.value,
-        name: '/damage_detects_request',
-        type: "std_msgs/String",
-        reconnectOnClose: true,
-        queueLength: 10,
-        queueSize: 10);
+    // bat_state_request = Topic(
+    //     ros: controller.ros.value,
+    //     name: '/bat_state_request',
+    //     type: "std_msgs/String",
+    //     reconnectOnClose: true,
+    //     queueLength: 10,
+    //     queueSize: 10);
+    // hours_cleaned_request = Topic(
+    //     ros: controller.ros.value,
+    //     name: '/hours_cleaned_request',
+    //     type: "std_msgs/String",
+    //     reconnectOnClose: true,
+    //     queueLength: 10,
+    //     queueSize: 10);
+    // damage_detects_request = Topic(
+    //     ros: controller.ros.value,
+    //     name: '/damage_detects_request',
+    //     type: "std_msgs/String",
+    //     reconnectOnClose: true,
+    //     queueLength: 10,
+    //     queueSize: 10);
     super.initState();
     mymethod();
     //initConnection();
@@ -104,15 +105,15 @@ class _thirdPageState extends State<thirdPage> {
 
   void initConnection() async {
     controller.rosConnect();
-    await bat_state_request.advertise();
-    var msg = {'data': 'battery_state_requesting '};
-    await bat_state_request.publish(msg);
-    await hours_cleaned_request.advertise();
-    var msg2 = {'data': 'hours_cleaned_requesting '};
-    await hours_cleaned_request.publish(msg2);
-    await damage_detects_request.advertise();
-    var msg3 = {'data': 'damage_detects_requesting '};
-    await damage_detects_request.publish(msg3);
+    // await bat_state_request.advertise();
+    // var msg = {'data': 'battery_state_requesting '};
+    // await bat_state_request.publish(msg);
+    // await hours_cleaned_request.advertise();
+    // var msg2 = {'data': 'hours_cleaned_requesting '};
+    // await hours_cleaned_request.publish(msg2);
+    // await damage_detects_request.advertise();
+    // var msg3 = {'data': 'damage_detects_requesting '};
+    // await damage_detects_request.publish(msg3);
     await damage_detects.subscribe(subscribeHandler1);
     await hours_cleaned.subscribe(subscribeHandler2);
     await battery_state.subscribe(subscribeHandler3);
@@ -124,7 +125,7 @@ class _thirdPageState extends State<thirdPage> {
 //store topics details in strings
 
   Future<void> subscribeHandler1(Map<String, dynamic> msg) async {
-    //msg = {'data': '12'};
+    //msg = {'data': '128777'};
     damage_details = msg['data'];
     choices[2] = Choice(
         title: 'Damage Detection :',
@@ -139,7 +140,7 @@ class _thirdPageState extends State<thirdPage> {
     //msg = {'data': '12'};
     cleaning_hours = msg['data'];
     choices[0] = Choice(
-        title: 'Hours Taken :',
+        title: 'Time Taken :',
         icon: Icons.access_alarm,
         details: cleaning_hours);
     setState(() {});
@@ -299,8 +300,8 @@ class _thirdPageState extends State<thirdPage> {
                                             ActionChip(
                                               label: Text(snapshot.data ==
                                                       Status.connected
-                                                  ? 'DISCONNECT'
-                                                  : 'CONNECT'),
+                                                  ? 'Refresh'
+                                                  : 'Get Results'),
                                               backgroundColor: snapshot.data ==
                                                       Status.connected
                                                   ? Colors.green[300]
@@ -401,7 +402,7 @@ class SelectCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Expanded(child: Icon(choice.icon, size: 50.0)),
-                Text(choice.title + choice.details),
+                FittedBox(child: Text(choice.title + choice.details)),
               ]),
         ));
   }
