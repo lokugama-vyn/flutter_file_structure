@@ -136,9 +136,9 @@ class _thirdPageState extends State<thirdPage> {
         title: 'Damage Detection :',
         icon: Icons.cameraswitch_rounded,
         details: damage_details);
-    print(damage_details);
-    controller.isError.value = true;
-    print(controller.isError.value);
+    // print(damage_details);
+    // //controller.isError.value = true;
+    // print(controller.isError.value);
     //print(msg['data']);
     // setState(() {});
   }
@@ -251,7 +251,9 @@ class _thirdPageState extends State<thirdPage> {
                                 backgroundColor:
                                     Color.fromARGB(206, 148, 211, 46),
                               ),
-                              onPressed: _cleaning_finished,
+                              onPressed: controller.isEnd.value
+                                  ? () => _cleaning_finished()
+                                  : null,
                               child: Text(
                                 "Cleaning Finished",
                                 style: TextStyle(
@@ -270,19 +272,6 @@ class _thirdPageState extends State<thirdPage> {
                               child: LayoutBuilder(
                                   builder: (context, constraints) {
                                 if (selectedTab == 1) {
-                                  return Container(
-                                    decoration: const BoxDecoration(
-                                        gradient: LinearGradient(
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
-                                            colors: [
-                                          Color.fromARGB(255, 203, 43, 147),
-                                          Color.fromARGB(255, 149, 70, 196),
-                                          Color.fromARGB(255, 94, 97, 244),
-                                        ])),
-                                    child: RobotAnimation(),
-                                  );
-                                } else {
                                   return Container(
                                     decoration: const BoxDecoration(
                                         gradient: LinearGradient(
@@ -315,8 +304,8 @@ class _thirdPageState extends State<thirdPage> {
                                                     label: Text(controller.ros
                                                                 .value.status ==
                                                             Status.connected
-                                                        ? 'Refresh'
-                                                        : 'Get Results'),
+                                                        ? 'DISCONNECT'
+                                                        : 'CONNECT'),
                                                     backgroundColor: controller
                                                                 .ros
                                                                 .value
@@ -338,6 +327,48 @@ class _thirdPageState extends State<thirdPage> {
                                                       }
                                                     },
                                                   ),
+                                                  Expanded(
+                                                      child: RobotAnimation()
+
+                                                      // Added
+                                                      ),
+                                                ],
+                                              )),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  return Container(
+                                    decoration: const BoxDecoration(
+                                        gradient: LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                            colors: [
+                                          Color.fromARGB(255, 203, 43, 147),
+                                          Color.fromARGB(255, 149, 70, 196),
+                                          Color.fromARGB(255, 94, 97, 244),
+                                        ])),
+                                    child: Scaffold(
+                                      backgroundColor: Colors.transparent,
+                                      body: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 15, right: 15),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: EdgeInsets.only(
+                                                  right: 15, top: 20),
+                                            ),
+                                            Expanded(
+                                              // Added
+                                              child: Container(
+                                                  child: Column(
+                                                children: [
                                                   Expanded(
                                                     child: GridView.count(
                                                       crossAxisCount: 3,

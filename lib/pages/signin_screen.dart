@@ -76,7 +76,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       // controller.verticle.value = 5;
                       // controller.horizontal.value = 5;
                       //controller.isEnd.value = true;
-                      //controller.isError.value = true;
+                      controller.isError.value = true;
                       // Navigator.push(context,
                       //     MaterialPageRoute(builder: (context) => ErrorPage()));
                     }
