@@ -31,40 +31,66 @@ class _SecondPageState extends State<SecondPage> {
   String horizontalPanels = "";
   String verticalPanels = "";
   bool vertical = false;
+  late Ros ros;
   //ros commands
   Controller controller = Get.find();
   late Topic powerOn;
+  var msg = {'type': '', 'verticle': '', 'horizontal': ''};
 
+  @override
   void initState() {
-    controller.rosConnect;
-    controller.rowColumnListener();
+    ros = Ros(url: 'wss://solarpanelcleaningrobot.pagekite.me/');
     powerOn = Topic(
-        ros: controller.ros.value,
+        ros: ros,
         name: '/powerOn',
         type: "std_msgs/String",
         reconnectOnClose: true,
         queueLength: 10,
         queueSize: 10);
+    controller.newRow = Topic(
+        ros: controller.ros.value,
+        name: '/newRow',
+        type: "std_msgs/String",
+        reconnectOnClose: true,
+        queueLength: 10,
+        queueSize: 10);
+    controller.warning = Topic(
+        ros: controller.ros.value,
+        name: '/warning',
+        type: "std_msgs/String",
+        reconnectOnClose: true,
+        queueLength: 10,
+        queueSize: 10);
+    initConnection();
 
     super.initState();
   }
 
+  Future<void> initConnection() async {
+    // ros.connect();
+    // //controller.rowColumnListener();
+    // //controller.rosConnect;
+    // await controller.newRow.subscribe(controller.subscribeHandler1);
+    // await controller.warning.subscribe(controller.subscribeHandler2);
+    // await powerOn.advertise();
+    setState(() {});
+    print('hi');
+  }
+
 //need to add ros.connect() and advertisng topics method like initconnection
   void _dryClean() async {
-    var msg1 = {'data': 'dry'};
-    await powerOn.publish(msg1);
+    msg['type'] = 'd';
   }
 
   void _wetClean() async {
-    var msg2 = {'data': 'wet'};
-    await powerOn.publish(msg2);
+    msg['type'] = 'w';
   }
 
   void destroyConnection() async {
     //await chatter.unsubscribe(); //forward unadvertise?
     await powerOn.unadvertise();
 
-    await controller.ros.value.close();
+    //await controller.ros.value.close();
     setState(() {});
   }
 
@@ -111,8 +137,10 @@ class _SecondPageState extends State<SecondPage> {
                         }
                         //publish topics
                         if (index == 0) {
+                          // initConnection();
                           _dryClean();
                         } else if (index == 1) {
+                          //initConnection();
                           _wetClean();
                         }
                         destroyConnection();
@@ -171,7 +199,7 @@ class _SecondPageState extends State<SecondPage> {
                     ),
                     onPressed: () async {
                       //print(_formKey.currentState!.validate());
-                      print(hPanelController.text);
+                      //print(hPanelController.text);
                       // Validate will return true if the form is valid, or false if
                       // the form is invalid.
                       if (hPanelController.text == '' ||
@@ -243,6 +271,8 @@ class _SecondPageState extends State<SecondPage> {
                             int.parse(vPanelController.text);
                         controller.horizontal.value =
                             int.parse(hPanelController.text);
+                        //check init connection
+                        // await initConnection();
 
                         FocusScopeNode currentFocus = FocusScope.of(context);
                         Navigator.of(context).push(
@@ -251,6 +281,10 @@ class _SecondPageState extends State<SecondPage> {
                           ),
                         );
                       }
+                      msg['verticle'] = vPanelController.text;
+                      msg['horizontal'] = hPanelController.text;
+                      //print(msg['type']);
+                      await powerOn.publish(msg);
                     },
                     child: const Text('Start'),
                   ),

@@ -8,7 +8,9 @@ import '../pages/secondPage.dart';
 import 'sidebar.dart';
 
 class SideBarLayout extends StatefulWidget {
-  const SideBarLayout({super.key});
+  const SideBarLayout({super.key, this.selected = 0});
+
+  final int selected;
 
   @override
   State<SideBarLayout> createState() => SideBarLayoutState();
@@ -21,6 +23,15 @@ class SideBarLayoutState extends State<SideBarLayout> {
     fifthPage(),
   ];
   var selectedPage = 0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    setState(() {
+      selectedPage = widget.selected;
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

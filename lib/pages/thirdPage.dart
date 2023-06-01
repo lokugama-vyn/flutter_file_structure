@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_file_structure/controllers/controller.dart';
+import 'package:flutter_file_structure/pages/EndNotify.dart';
+import 'package:flutter_file_structure/pages/ErrorPage.dart';
 
 import 'package:flutter_file_structure/pages/robot_animation.dart';
 import 'package:flutter_file_structure/pages/secondPage.dart';
@@ -101,10 +103,13 @@ class _thirdPageState extends State<thirdPage> {
     super.initState();
     mymethod();
     //initConnection();
+    print(controller.ros.value.status);
   }
 
   void initConnection() async {
+    print(controller.ros.value.status);
     controller.rosConnect();
+    await controller.newRow.subscribe(controller.subscribeHandler1);
     // await bat_state_request.advertise();
     // var msg = {'data': 'battery_state_requesting '};
     // await bat_state_request.publish(msg);
@@ -132,8 +137,10 @@ class _thirdPageState extends State<thirdPage> {
         icon: Icons.cameraswitch_rounded,
         details: damage_details);
     print(damage_details);
+    controller.isError.value = true;
+    print(controller.isError.value);
     //print(msg['data']);
-    setState(() {});
+    // setState(() {});
   }
 
   Future<void> subscribeHandler2(Map<String, dynamic> msg) async {
@@ -143,7 +150,7 @@ class _thirdPageState extends State<thirdPage> {
         title: 'Time Taken :',
         icon: Icons.access_alarm,
         details: cleaning_hours);
-    setState(() {});
+    // setState(() {});
   }
 
   Future<void> subscribeHandler3(Map<String, dynamic> msg) async {
@@ -153,7 +160,7 @@ class _thirdPageState extends State<thirdPage> {
         title: 'Battery Level :',
         icon: Icons.battery_charging_full,
         details: battery_status);
-    setState(() {});
+    // setState(() {});
   }
 
   //TOPIC HANDLING
@@ -203,178 +210,205 @@ class _thirdPageState extends State<thirdPage> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return StreamBuilder<Object>(
-      stream: controller.ros.value.statusStream,
-      builder: (context, snapshot) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text("Monitoring Panel"),
-            centerTitle: true,
-            automaticallyImplyLeading: false,
-          ),
-          body: Container(
-            child: Column(
-              children: <Widget>[
-                Container(
-                  color: Colors.deepOrange,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+    return Obx(() {
+      return Stack(
+        children: [
+          StreamBuilder<Object>(
+            stream: controller.ros.value.statusStream,
+            builder: (context, snapshot) {
+              return Scaffold(
+                appBar: AppBar(
+                  title: Text("Monitoring Panel"),
+                  centerTitle: true,
+                  automaticallyImplyLeading: false,
+                ),
+                body: Container(
+                  child: Column(
                     children: <Widget>[
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.purple,
-                        ),
-                        onPressed: _cleaning,
-                        child: Text(
-                          "Cleaning",
-                          style: TextStyle(
-                              fontWeight: selectedTab == 1
-                                  ? FontWeight.bold
-                                  : FontWeight.normal),
+                      Container(
+                        color: Colors.deepOrange,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.purple,
+                              ),
+                              onPressed: _cleaning,
+                              child: Text(
+                                "Cleaning",
+                                style: TextStyle(
+                                    fontWeight: selectedTab == 1
+                                        ? FontWeight.bold
+                                        : FontWeight.normal),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(right: 20),
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Color.fromARGB(206, 148, 211, 46),
+                              ),
+                              onPressed: _cleaning_finished,
+                              child: Text(
+                                "Cleaning Finished",
+                                style: TextStyle(
+                                    fontWeight: selectedTab == 2
+                                        ? FontWeight.bold
+                                        : FontWeight.normal),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 20),
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromARGB(206, 148, 211, 46),
-                        ),
-                        onPressed: _cleaning_finished,
-                        child: Text(
-                          "Cleaning Finished",
-                          style: TextStyle(
-                              fontWeight: selectedTab == 2
-                                  ? FontWeight.bold
-                                  : FontWeight.normal),
-                        ),
-                      ),
+                      (verticle == null || horizontal == null)
+                          ? Container()
+                          : Container(
+                              height: MediaQuery.of(context).size.height - 130,
+                              child: LayoutBuilder(
+                                  builder: (context, constraints) {
+                                if (selectedTab == 1) {
+                                  return Container(
+                                    decoration: const BoxDecoration(
+                                        gradient: LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                            colors: [
+                                          Color.fromARGB(255, 203, 43, 147),
+                                          Color.fromARGB(255, 149, 70, 196),
+                                          Color.fromARGB(255, 94, 97, 244),
+                                        ])),
+                                    child: RobotAnimation(),
+                                  );
+                                } else {
+                                  return Container(
+                                    decoration: const BoxDecoration(
+                                        gradient: LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                            colors: [
+                                          Color.fromARGB(255, 203, 43, 147),
+                                          Color.fromARGB(255, 149, 70, 196),
+                                          Color.fromARGB(255, 94, 97, 244),
+                                        ])),
+                                    child: Scaffold(
+                                      backgroundColor: Colors.transparent,
+                                      body: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 15, right: 15),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            Padding(
+                                              padding:
+                                                  EdgeInsets.only(right: 15),
+                                            ),
+                                            Expanded(
+                                              // Added
+                                              child: Container(
+                                                  child: Column(
+                                                children: [
+                                                  ActionChip(
+                                                    label: Text(controller.ros
+                                                                .value.status ==
+                                                            Status.connected
+                                                        ? 'Refresh'
+                                                        : 'Get Results'),
+                                                    backgroundColor: controller
+                                                                .ros
+                                                                .value
+                                                                .status ==
+                                                            Status.connected
+                                                        ? Colors.green[300]
+                                                        : Colors.grey[300],
+                                                    onPressed: () async {
+                                                      print(controller
+                                                          .ros.value.status);
+                                                      if (controller.ros.value
+                                                              .status !=
+                                                          Status.connected) {
+                                                        this.initConnection();
+                                                        print("not");
+                                                      } else {
+                                                        print("co");
+                                                        this.destroyConnection();
+                                                      }
+                                                    },
+                                                  ),
+                                                  Expanded(
+                                                    child: GridView.count(
+                                                      crossAxisCount: 3,
+                                                      crossAxisSpacing: 4.0,
+                                                      mainAxisSpacing: 8.0,
+                                                      children: List.generate(
+                                                          choices.length,
+                                                          (index) {
+                                                        return Center(
+                                                          child: SelectCard(
+                                                              choice: choices[
+                                                                  index]),
+                                                        );
+                                                      }),
+                                                    ),
+
+                                                    // Added
+                                                  ),
+                                                ],
+                                              )),
+                                            ),
+                                            Container(
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height -
+                                                    280,
+                                                width: double.infinity,
+                                                padding: EdgeInsets.only(
+                                                    top: 15, bottom: 10),
+                                                child: damage
+                                                    ? Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          image:
+                                                              DecorationImage(
+                                                            image: AssetImage(
+                                                                'assets/images/caution.jpg'),
+                                                            fit: BoxFit.fill,
+                                                          ),
+                                                        ),
+                                                      )
+                                                    : Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          image:
+                                                              DecorationImage(
+                                                            image: AssetImage(
+                                                                'assets/images/robot.jpg'),
+                                                            fit: BoxFit.fill,
+                                                          ),
+                                                        ),
+                                                      )),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }
+                              }),
+                            )
                     ],
                   ),
                 ),
-                (verticle == null || horizontal == null)
-                    ? Container()
-                    : Container(
-                        height: MediaQuery.of(context).size.height - 130,
-                        child: LayoutBuilder(builder: (context, constraints) {
-                          if (selectedTab == 1) {
-                            return Container(
-                              decoration: const BoxDecoration(
-                                  gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                    Color.fromARGB(255, 203, 43, 147),
-                                    Color.fromARGB(255, 149, 70, 196),
-                                    Color.fromARGB(255, 94, 97, 244),
-                                  ])),
-                              child: RobotAnimation(),
-                            );
-                          } else {
-                            return Container(
-                              decoration: const BoxDecoration(
-                                  gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                    Color.fromARGB(255, 203, 43, 147),
-                                    Color.fromARGB(255, 149, 70, 196),
-                                    Color.fromARGB(255, 94, 97, 244),
-                                  ])),
-                              child: Scaffold(
-                                backgroundColor: Colors.transparent,
-                                body: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 15, right: 15),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: EdgeInsets.only(right: 15),
-                                      ),
-                                      Expanded(
-                                        // Added
-                                        child: Container(
-                                            child: Column(
-                                          children: [
-                                            ActionChip(
-                                              label: Text(snapshot.data ==
-                                                      Status.connected
-                                                  ? 'Refresh'
-                                                  : 'Get Results'),
-                                              backgroundColor: snapshot.data ==
-                                                      Status.connected
-                                                  ? Colors.green[300]
-                                                  : Colors.grey[300],
-                                              onPressed: () async {
-                                                if (snapshot.data !=
-                                                    Status.connected) {
-                                                  this.initConnection();
-                                                } else {
-                                                  this.destroyConnection();
-                                                }
-                                              },
-                                            ),
-                                            Expanded(
-                                              child: GridView.count(
-                                                crossAxisCount: 3,
-                                                crossAxisSpacing: 4.0,
-                                                mainAxisSpacing: 8.0,
-                                                children: List.generate(
-                                                    choices.length, (index) {
-                                                  return Center(
-                                                    child: SelectCard(
-                                                        choice: choices[index]),
-                                                  );
-                                                }),
-                                              ),
-
-                                              // Added
-                                            ),
-                                          ],
-                                        )),
-                                      ),
-                                      Container(
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height -
-                                              280,
-                                          width: double.infinity,
-                                          padding: EdgeInsets.only(
-                                              top: 15, bottom: 10),
-                                          child: damage
-                                              ? Container(
-                                                  decoration: BoxDecoration(
-                                                    image: DecorationImage(
-                                                      image: AssetImage(
-                                                          'assets/images/caution.jpg'),
-                                                      fit: BoxFit.fill,
-                                                    ),
-                                                  ),
-                                                )
-                                              : Container(
-                                                  decoration: BoxDecoration(
-                                                    image: DecorationImage(
-                                                      image: AssetImage(
-                                                          'assets/images/robot.jpg'),
-                                                      fit: BoxFit.fill,
-                                                    ),
-                                                  ),
-                                                )),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          }
-                        }),
-                      )
-              ],
-            ),
+              );
+            },
           ),
-        );
-      },
-    );
+          controller.isError.value ? ErrorPage() : Container(),
+          controller.isEnd.value ? EndNotify() : Container(),
+        ],
+      );
+    });
   }
 }
 

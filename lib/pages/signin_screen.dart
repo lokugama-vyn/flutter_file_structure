@@ -1,10 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_file_structure/pages/EndNotify.dart';
+import 'package:flutter_file_structure/pages/ErrorPage.dart';
 import 'package:flutter_file_structure/pages/secondPage.dart';
 import 'package:flutter_file_structure/reusable_widgets/reusable_widgets.dart';
 import 'package:flutter_file_structure/pages/reset_password.dart';
 import 'package:flutter_file_structure/pages/signup_screen.dart';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../controllers/controller.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
@@ -16,7 +21,7 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   TextEditingController _passwordTextController = TextEditingController();
   TextEditingController _emailTextController = TextEditingController();
-
+  Controller controller = Get.find();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,10 +57,13 @@ class _SignInScreenState extends State<SignInScreen> {
                 forgetPassword(context),
                 firebaseUIButton(context, "Sign In", () async {
                   try {
-                    final newUser = await FirebaseAuth.instance
-                        .signInWithEmailAndPassword(
-                            email: _emailTextController.text,
-                            password: _passwordTextController.text);
+                    final newUser =
+                        await FirebaseAuth.instance.signInWithEmailAndPassword(
+                      // email: _emailTextController.text,
+                      // password: _passwordTextController.text,
+                      email: "fixit@gmail.com",
+                      password: "12345678",
+                    );
                     if (newUser != null) {
                       Navigator.push(
                           context,
@@ -63,6 +71,14 @@ class _SignInScreenState extends State<SignInScreen> {
                               builder: (context) => SecondPage(
                                     title: 'Solar panel Cleaning Robot',
                                   )));
+
+                      //check errorpage and endnotify page
+                      // controller.verticle.value = 5;
+                      // controller.horizontal.value = 5;
+                      controller.isEnd.value = true;
+                      //controller.isError.value = true;
+                      // Navigator.push(context,
+                      //     MaterialPageRoute(builder: (context) => ErrorPage()));
                     }
                   } on FirebaseAuthException catch (e) {
                     if (e.code == 'user-not-found') {

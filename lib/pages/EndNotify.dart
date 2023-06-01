@@ -1,42 +1,38 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_file_structure/pages/fourthPage.dart';
-import 'package:flutter_file_structure/sidebar/sidebar_layout.dart';
 
 import 'package:get/get.dart';
-import 'package:vibration/vibration.dart';
 
 import '../controllers/controller.dart';
+import '../sidebar/sidebar_layout.dart';
 
-class ErrorPage extends StatefulWidget {
+class EndNotify extends StatefulWidget {
   @override
-  _ErrorPageState createState() => _ErrorPageState();
+  _EndNotifyState createState() => _EndNotifyState();
 }
 
-class _ErrorPageState extends State<ErrorPage> {
+class _EndNotifyState extends State<EndNotify> {
   Controller controller = Get.find();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.withOpacity(0.4),
       body: Center(
         child: AlertDialog(
-          title: Text('Warning! Warning!', style: TextStyle(color: Colors.red)),
-          content: Text('Robot is in danger! Take your control'),
+          title: Text('Hurray!! Cleaning Finished',
+              style: TextStyle(color: Colors.red)),
+          content: Text('Know Statistics'),
           actions: <Widget>[
             ElevatedButton(
-              child: Text('Take Control'),
+              child: Text('Go there!!'),
               onPressed: () {
-                print(controller.isError.value);
-                controller.isError.value = false;
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => SideBarLayout(
                               selected: 1,
-                            ))); //changed to sidebarlayout from fourthpage
+                            )));
               },
             )
           ],
