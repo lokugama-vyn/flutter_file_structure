@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_file_structure/pages/fifthPage.dart';
 import 'package:flutter_file_structure/pages/thirdPage.dart';
 import 'package:flutter_file_structure/sidebar/menu_items.dart' as menu;
+import 'package:get/get.dart';
 
+import '../controllers/controller.dart';
 import '../pages/fourthPage.dart';
 import '../pages/secondPage.dart';
 import 'sidebar.dart';
@@ -27,9 +29,11 @@ class SideBarLayoutState extends State<SideBarLayout> {
   @override
   void initState() {
     // TODO: implement initState
+
     setState(() {
       selectedPage = widget.selected;
     });
+
     super.initState();
   }
 
