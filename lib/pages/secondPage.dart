@@ -31,12 +31,15 @@ class _SecondPageState extends State<SecondPage> {
   String horizontalPanels = "";
   String verticalPanels = "";
   bool vertical = false;
+  late Topic columns;
+  late Topic rows;
   late Ros ros;
   //ros commands
   Controller controller = Get.find();
   late Topic powerOn;
-  var msg = {'type': '', 'verticle': '', 'horizontal': ''};
-
+  //var msg3 = ;
+  var msg3 = {'data': ''};
+  var msg4 = {'data': ''};
   @override
   void initState() {
     ros = Ros(url: 'wss://solarpanelcleaningrobot.pagekite.me/');
@@ -47,16 +50,16 @@ class _SecondPageState extends State<SecondPage> {
         reconnectOnClose: true,
         queueLength: 10,
         queueSize: 10);
-    controller.newRow = Topic(
-        ros: controller.ros.value,
-        name: '/newRow',
+    columns = Topic(
+        ros: ros,
+        name: '/columns',
         type: "std_msgs/String",
         reconnectOnClose: true,
         queueLength: 10,
         queueSize: 10);
-    controller.warning = Topic(
-        ros: controller.ros.value,
-        name: '/warning',
+    rows = Topic(
+        ros: ros,
+        name: '/rows',
         type: "std_msgs/String",
         reconnectOnClose: true,
         queueLength: 10,
@@ -67,28 +70,32 @@ class _SecondPageState extends State<SecondPage> {
   }
 
   Future<void> initConnection() async {
-    // ros.connect();
+    ros.connect();
     // //controller.rowColumnListener();
     // //controller.rosConnect;
     // await controller.newRow.subscribe(controller.subscribeHandler1);
     // await controller.warning.subscribe(controller.subscribeHandler2);
-    // await powerOn.advertise();
+    await powerOn.advertise();
+    await columns.advertise();
+    await rows.advertise();
     setState(() {});
     print('hi');
   }
 
 //need to add ros.connect() and advertisng topics method like initconnection
   void _dryClean() async {
-    msg['type'] = 'd';
+    var msg1 = {'data': 'd'};
+    await powerOn.publish(msg1);
   }
 
   void _wetClean() async {
-    msg['type'] = 'w';
+    var msg2 = {'data': 'w'};
+    await powerOn.publish(msg2);
   }
 
   void destroyConnection() async {
     //await chatter.unsubscribe(); //forward unadvertise?
-    await powerOn.unadvertise();
+    //await powerOn.unadvertise();
 
     //await controller.ros.value.close();
     setState(() {});
@@ -281,10 +288,11 @@ class _SecondPageState extends State<SecondPage> {
                           ),
                         );
                       }
-                      msg['verticle'] = vPanelController.text;
-                      msg['horizontal'] = hPanelController.text;
+                      msg3['data'] = vPanelController.text;
+                      msg4['data'] = hPanelController.text;
                       //print(msg['type']);
-                      await powerOn.publish(msg);
+                      await columns.publish(msg3);
+                      await rows.publish(msg4);
                     },
                     child: const Text('Start'),
                   ),

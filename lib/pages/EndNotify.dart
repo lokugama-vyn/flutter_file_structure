@@ -25,13 +25,14 @@ class _EndNotifyState extends State<EndNotify> {
           content: Text('Know Statistics'),
           actions: <Widget>[
             ElevatedButton(
-              child: Text('Go there!!'),
+              child: Text('Ok'),
               onPressed: () {
+                controller.isEnd.value = false;
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => SideBarLayout(
-                              selected: 1,
+                              selected: 0,
                             )));
               },
             )
