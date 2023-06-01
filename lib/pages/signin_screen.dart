@@ -75,7 +75,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       //check errorpage and endnotify page
                       // controller.verticle.value = 5;
                       // controller.horizontal.value = 5;
-                      controller.isEnd.value = true;
+                      //controller.isEnd.value = true;
                       //controller.isError.value = true;
                       // Navigator.push(context,
                       //     MaterialPageRoute(builder: (context) => ErrorPage()));
