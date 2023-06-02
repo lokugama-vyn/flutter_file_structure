@@ -251,7 +251,7 @@ class _thirdPageState extends State<thirdPage> {
                                 backgroundColor:
                                     Color.fromARGB(206, 148, 211, 46),
                               ),
-                              onPressed: controller.isEnd.value
+                              onPressed: controller.isEndvalue.value
                                   ? () => _cleaning_finished()
                                   : null,
                               child: Text(
