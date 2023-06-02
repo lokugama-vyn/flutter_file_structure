@@ -27,13 +27,14 @@ class _EndNotifyState extends State<EndNotify> {
             ElevatedButton(
               child: Text('Ok'),
               onPressed: () {
-                controller.isEnd.value = false;
+                // controller.isEnd.value = false;
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => SideBarLayout(
                               selected: 0,
                             )));
+                controller.isEnd.value = false;
               },
             )
           ],
