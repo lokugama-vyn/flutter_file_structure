@@ -17,6 +17,7 @@ class Controller extends GetxController {
   var isError = false.obs;
   var isEnd = false.obs;
   String numbersString = '';
+  var isEndvalue = false.obs;
 
   Future<void> rosConnect() async {
     print('printed');
@@ -78,6 +79,7 @@ class Controller extends GetxController {
   Future<void> subscribeHandler3(Map<String, dynamic> msg) async {
     //msg = {'data': '12'};
     isEnd.value = true;
+    isEndvalue.value = true;
     Vibration.vibrate(
       pattern: [
         0,
