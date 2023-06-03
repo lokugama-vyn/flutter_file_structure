@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_structure/pages/fourthPage.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 
 import 'package:get/get.dart';
 
@@ -15,6 +16,12 @@ class EndNotify extends StatefulWidget {
 class _EndNotifyState extends State<EndNotify> {
   Controller controller = Get.find();
   @override
+  void initState() {
+    FlutterRingtonePlayer.play(fromAsset: "assets/end.mp3");
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.withOpacity(0.4),
@@ -27,6 +34,7 @@ class _EndNotifyState extends State<EndNotify> {
             ElevatedButton(
               child: Text('Ok'),
               onPressed: () {
+                FlutterRingtonePlayer.stop();
                 // controller.isEnd.value = false;
                 Navigator.push(
                     context,

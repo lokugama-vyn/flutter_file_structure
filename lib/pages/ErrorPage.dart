@@ -6,7 +6,7 @@ import 'package:flutter_file_structure/sidebar/sidebar_layout.dart';
 
 import 'package:get/get.dart';
 import 'package:vibration/vibration.dart';
-
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import '../controllers/controller.dart';
 
 class ErrorPage extends StatefulWidget {
@@ -16,6 +16,11 @@ class ErrorPage extends StatefulWidget {
 
 class _ErrorPageState extends State<ErrorPage> {
   Controller controller = Get.find();
+  @override
+  void initState() {
+    FlutterRingtonePlayer.play(fromAsset: "assets/alarm.mp3");
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +34,7 @@ class _ErrorPageState extends State<ErrorPage> {
             ElevatedButton(
               child: Text('Take Control'),
               onPressed: () {
+                FlutterRingtonePlayer.stop();
                 print(controller.isError.value);
                 controller.isError.value = false;
                 Navigator.push(
