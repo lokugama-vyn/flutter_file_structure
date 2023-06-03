@@ -335,7 +335,6 @@ class _fourthPageState extends State<fourthPage> {
               );
             },
           ),
-          controller.isError.value ? ErrorPage() : Container(),
           controller.isEnd.value ? EndNotify() : Container(),
         ],
       );
