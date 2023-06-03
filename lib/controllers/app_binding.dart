@@ -5,6 +5,6 @@ class AppBinding extends Bindings {
   @override
   void dependencies() {
     // TODO: implement dependencies
-    Get.lazyPut<Controller>(() => Controller());
+    Get.put(Controller());
   }
 }
