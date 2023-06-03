@@ -44,6 +44,7 @@ class _RobotAnimationState extends State<RobotAnimation> {
                   return Container(
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.white, width: 1),
+                      color: Color.fromRGBO(25, 113, 113, 1),
                     ),
                   );
                 }

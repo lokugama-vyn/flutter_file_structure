@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_file_structure/pages/secondPage.dart';
 import 'package:flutter_file_structure/pages/signin_screen.dart';
+import 'package:flutter_file_structure/pages/thirdPage.dart';
+
+import '../sidebar/sidebar_layout.dart';
 
 class fifthPage extends StatelessWidget {
   @override
@@ -73,10 +76,10 @@ class fifthPage extends StatelessWidget {
                         onPressed: (() {
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute<void>(
-                              builder: (BuildContext context) => SecondPage(
-                                title: 'Solar Panel Cleaning Robot',
-                              ),
-                            ),
+                                builder: (BuildContext context) =>
+                                    SideBarLayout(
+                                      selected: 0,
+                                    )),
                           );
                         }),
                         child: Text('Cancel',
