@@ -36,16 +36,16 @@ class _SecondPageState extends State<SecondPage> {
   late Ros ros;
   //ros commands
   Controller controller = Get.find();
-  late Topic powerOn;
+  late Topic clean_type;
   //var msg3 = ;
   var msg3 = {'data': ''};
   var msg4 = {'data': ''};
   @override
   void initState() {
     ros = Ros(url: 'wss://solarpanelcleaningrobot.pagekite.me/');
-    powerOn = Topic(
+    clean_type = Topic(
         ros: ros,
-        name: '/powerOn',
+        name: '/clean_type',
         type: "std_msgs/String",
         reconnectOnClose: true,
         queueLength: 10,
@@ -75,7 +75,7 @@ class _SecondPageState extends State<SecondPage> {
     // //controller.rosConnect;
     // await controller.newRow.subscribe(controller.subscribeHandler1);
     // await controller.warning.subscribe(controller.subscribeHandler2);
-    await powerOn.advertise();
+    await clean_type.advertise();
     await columns.advertise();
     await rows.advertise();
     setState(() {});
@@ -85,12 +85,12 @@ class _SecondPageState extends State<SecondPage> {
 //need to add ros.connect() and advertisng topics method like initconnection
   void _dryClean() async {
     var msg1 = {'data': 'd'};
-    await powerOn.publish(msg1);
+    await clean_type.publish(msg1);
   }
 
   void _wetClean() async {
     var msg2 = {'data': 'w'};
-    await powerOn.publish(msg2);
+    await clean_type.publish(msg2);
   }
 
   void destroyConnection() async {
