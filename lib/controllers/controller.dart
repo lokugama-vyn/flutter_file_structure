@@ -5,9 +5,9 @@ import 'package:vibration/vibration.dart';
 class Controller extends GetxController {
   var verticle = 0.obs;
   var horizontal = 0.obs;
-  var currentColumn = 2.obs;
+  var currentColumn = 0.obs;
   late Topic newRow; //TOPIC to handle row and column number
-  var currentRow = 1.obs;
+  var currentRow = 0.obs;
   var ros = Ros(url: 'wss://solarpanelcleaningrobot.pagekite.me/').obs;
 
   var newRowDetails = '';
