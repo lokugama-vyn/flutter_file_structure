@@ -3,19 +3,8 @@ import 'package:get/get.dart';
 
 import '../controllers/controller.dart';
 
-class RobotAnimation extends StatefulWidget {
-  const RobotAnimation({super.key});
-
-  @override
-  _RobotAnimationState createState() => _RobotAnimationState();
-}
-
-class _RobotAnimationState extends State<RobotAnimation> {
+class RobotAnimation extends StatelessWidget {
   Controller controller = Get.find();
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,23 +20,33 @@ class _RobotAnimationState extends State<RobotAnimation> {
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: controller.verticle.value),
               itemBuilder: (context, index) {
-                if (index ==
-                    (controller.currentRow.value * controller.verticle.value) +
-                        controller.currentColumn.value) {
-                  // This is the avatar
-                  return CircleAvatar(
-                    backgroundColor: Colors.green,
-                    child: FittedBox(child: Text('cleaning')),
-                  );
-                } else {
-                  // This is an empty grid cell
-                  return Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white, width: 1),
-                      color: Color.fromRGBO(25, 113, 113, 1),
+                return Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white, width: 1),
+                        color: Color.fromRGBO(25, 113, 113, 1),
+                      ),
                     ),
-                  );
-                }
+                    Obx(() {
+                      return index ==
+                              (controller.currentRow.value *
+                                      controller.verticle.value) +
+                                  controller.currentColumn.value
+                          ? CircleAvatar(
+                              backgroundColor:
+                                  Color.fromARGB(255, 227, 209, 48),
+                              child: FittedBox(
+                                  child: Text(
+                                "Cleaning",
+                                style: TextStyle(color: Colors.black),
+                              )),
+                            )
+                          : Container();
+                    }),
+                  ],
+                );
               },
             ),
           ),
