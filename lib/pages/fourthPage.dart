@@ -8,21 +8,36 @@ import 'package:vibration/vibration.dart';
 import 'EndNotify.dart';
 import 'ErrorPage.dart';
 
+const List<Widget> icons = <Widget>[
+  Text('On'),
+  Text('Off'),
+];
+const List<Widget> icons_second = <Widget>[
+  Text('On'),
+  Text('Off'),
+];
+
 class fourthPage extends StatefulWidget {
   @override
   _fourthPageState createState() => _fourthPageState();
 }
 
 class _fourthPageState extends State<fourthPage> {
+  final List<bool> _selectedindex = <bool>[false, true];
+  final List<bool> _selectedindex2 = <bool>[false, true];
   late Ros ros;
   late Topic manualControl;
-
+  late Topic clean_type_manual;
+  late Topic clean_motor_manual;
   //added states to recognize pressed buttons
   bool forwardState = false;
   bool reverseState = false;
   bool rightState = false;
   bool leftState = false;
   bool movingState = false;
+
+  bool vertical = false;
+  bool vertical1 = false;
   Controller controller = Get.find();
   @override
   void initState() {
@@ -30,6 +45,20 @@ class _fourthPageState extends State<fourthPage> {
     manualControl = Topic(
         ros: ros,
         name: '/manualControl',
+        type: "std_msgs/String",
+        reconnectOnClose: true,
+        queueLength: 10,
+        queueSize: 10);
+    clean_type_manual = Topic(
+        ros: ros,
+        name: '/clean_type_manual',
+        type: "std_msgs/String",
+        reconnectOnClose: true,
+        queueLength: 10,
+        queueSize: 10);
+    clean_motor_manual = Topic(
+        ros: ros,
+        name: '/clean_motor_manual',
         type: "std_msgs/String",
         reconnectOnClose: true,
         queueLength: 10,
@@ -42,6 +71,8 @@ class _fourthPageState extends State<fourthPage> {
     ros.connect();
 
     await manualControl.advertise();
+    await clean_type_manual.advertise();
+    await clean_motor_manual.advertise();
 
     setState(() {});
   }
@@ -155,28 +186,36 @@ class _fourthPageState extends State<fourthPage> {
     // print('done publihsed forward topic');
   }
 
-  void stop_func() async {
-    setState(() {
-      forwardState = false;
-      reverseState = false;
-      rightState = false;
-      leftState = false;
-      movingState = false;
-    });
-    Vibration.vibrate(duration: 1000);
-    var msg = {'data': 'z'};
-    await manualControl.publish(msg);
+  void _onRollerBrush() async {
+    var msg1 = {'data': 'a'};
+    await clean_motor_manual.publish(msg1);
+    //await clean_motor_manual.unadvertise();
+  }
 
-    // var msg = {'data': 'stop '};
-    // await stop.publish(msg);
-    // print('done publihsed stop topic');
+  void _offRollerBrush() async {
+    var msg2 = {'data': 'q'};
+    await clean_motor_manual.publish(msg2);
+    // await clean_motor_manual.unadvertise();
+  }
+
+  void _onPumpMotor() async {
+    var msg3 = {'data': 'w'};
+    await clean_type_manual.publish(msg3);
+    //await clean_type_manual.unadvertise();
+  }
+
+  void _offPumpMotor() async {
+    var msg4 = {'data': 'd'};
+    await clean_type_manual.publish(msg4);
+    // await clean_type_manual.unadvertise();
   }
 
   void destroyConnection() async {
     //await chatter.unsubscribe(); //forward unadvertise?
 
     await manualControl.unadvertise();
-
+    await clean_motor_manual.unadvertise();
+    await clean_type_manual.unadvertise();
     await ros.close();
     setState(() {});
   }
@@ -211,11 +250,21 @@ class _fourthPageState extends State<fourthPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     textBaseline: TextBaseline.alphabetic,
                     children: <Widget>[
+                      // Padding(
+                      //   padding: EdgeInsets.only(top: 5),
+                      // ),
                       //newly added
-                      Text('Take Your Control', style: TextStyle(fontSize: 25)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text('Take Your Control',
+                              style: TextStyle(fontSize: 25)),
+                        ],
+                      ),
                       Padding(
                         padding: EdgeInsets.only(bottom: 20),
                       ),
+
                       ActionChip(
                         label: Text(snapshot.data == Status.connected
                             ? 'DISCONNECT'
@@ -231,6 +280,101 @@ class _fourthPageState extends State<fourthPage> {
                             this.destroyConnection();
                           }
                         },
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text('Roller Brush',
+                              style: TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.bold)),
+                          SizedBox(
+                            width: 40,
+                          ),
+                          ToggleButtons(
+                              direction:
+                                  vertical ? Axis.vertical : Axis.horizontal,
+                              onPressed: (int index) {
+                                setState(() {
+                                  // The button that is tapped is set to true, and the others to false.
+
+                                  for (int i = 0;
+                                      i < _selectedindex.length;
+                                      i++) {
+                                    _selectedindex[i] = i == index;
+                                  }
+                                  //publish topics
+                                  if (index == 0) {
+                                    // initConnection();
+                                    _onRollerBrush();
+                                  } else if (index == 1) {
+                                    //initConnection();
+                                    _offRollerBrush();
+                                  }
+                                  //destroyConnection();
+                                });
+                              },
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(10)),
+                              selectedBorderColor: Colors.black,
+                              selectedColor: Colors.white,
+                              fillColor: Colors.red[200],
+                              color: Colors.red[400],
+                              constraints: const BoxConstraints(
+                                minHeight: 50.0,
+                                minWidth: 50.0,
+                              ),
+                              isSelected: _selectedindex,
+                              children: icons),
+                        ],
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 10),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text('Water Inlet',
+                              style: TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.bold)),
+                          SizedBox(
+                            width: 50,
+                          ),
+                          ToggleButtons(
+                              direction:
+                                  vertical1 ? Axis.vertical : Axis.horizontal,
+                              onPressed: (int index1) {
+                                setState(() {
+                                  // The button that is tapped is set to true, and the others to false.
+
+                                  for (int i = 0;
+                                      i < _selectedindex2.length;
+                                      i++) {
+                                    _selectedindex2[i] = i == index1;
+                                  }
+                                  //publish topics
+                                  if (index1 == 0) {
+                                    // initConnection();
+                                    _onPumpMotor();
+                                  } else if (index1 == 1) {
+                                    //initConnection();
+                                    _offPumpMotor();
+                                  }
+                                  //destroyConnection();
+                                });
+                              },
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(10)),
+                              selectedBorderColor: Colors.black,
+                              selectedColor: Colors.white,
+                              fillColor: Colors.red[200],
+                              color: Colors.red[400],
+                              constraints: const BoxConstraints(
+                                minHeight: 50.0,
+                                minWidth: 50.0,
+                              ),
+                              isSelected: _selectedindex2,
+                              children: icons_second),
+                        ],
                       ),
 
                       Row(
@@ -251,9 +395,9 @@ class _fourthPageState extends State<fourthPage> {
                               }),
                         ],
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 30),
-                      ),
+                      // Padding(
+                      //   padding: EdgeInsets.only(bottom: 10),
+                      // ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
@@ -273,19 +417,13 @@ class _fourthPageState extends State<fourthPage> {
                             },
                           ),
                           // _buildControlButton(
-                          //   icon: Icons.stop,
+                          //   icon: Icons.water_drop_sharp,
                           //   onPressed: () {
-                          //     stop_func();
+                          //     water_line_func();
                           //     // Send command to robot to stop
                           //   },
-                          //   onReleased: () {
-                          //     stop_func();
-                          //     setState(() {
-                          //       rightState = false;
-                          //     });
-                          //     //print(forwardState);
-                          //   },
                           // ),
+
                           //space between right and left arrows
                           SizedBox(
                             width: 70,
@@ -307,9 +445,9 @@ class _fourthPageState extends State<fourthPage> {
                           ),
                         ],
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 30),
-                      ),
+                      // Padding(
+                      //   padding: EdgeInsets.only(top: 30),
+                      // ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
@@ -373,6 +511,33 @@ class _fourthPageState extends State<fourthPage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildManualButton(
+      {IconData? icon, Function? onPressed, bool pressed = false}) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          primary: pressed ? Color.fromARGB(255, 2, 77, 5) : Colors.green,
+          onPrimary: Colors.white,
+          shadowColor: Colors.greenAccent,
+          elevation: 3,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          minimumSize: Size(30, 30),
+          //////// HERE
+        ),
+        child: Icon(
+          icon,
+          color: Colors.white,
+        ),
+        onPressed: () {
+          onPressed!();
+          // Send command to robot to stop
+        },
       ),
     );
   }
