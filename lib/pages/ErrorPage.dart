@@ -29,7 +29,9 @@ class _ErrorPageState extends State<ErrorPage> {
       body: Center(
         child: AlertDialog(
           title: Text('Warning! Warning!', style: TextStyle(color: Colors.red)),
-          content: Text('Robot is in danger! Take your control'),
+          content: Obx(() {
+            return Text(controller.userWarning.value);
+          }),
           actions: <Widget>[
             ElevatedButton(
               child: Text('Take Control'),

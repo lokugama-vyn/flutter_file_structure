@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_file_structure/controllers/controller.dart';
 
@@ -33,6 +35,7 @@ class _SecondPageState extends State<SecondPage> {
   bool vertical = false;
   late Topic columns;
   late Topic rows;
+  late Topic startRobot;
   late Ros ros;
   //ros commands
   Controller controller = Get.find();
@@ -40,6 +43,7 @@ class _SecondPageState extends State<SecondPage> {
   //var msg3 = ;
   var msg3 = {'data': ''};
   var msg4 = {'data': ''};
+  var msg5 = {'data': ''};
   @override
   void initState() {
     ros = Ros(url: 'wss://solarpanelcleaningrobot.pagekite.me/');
@@ -64,6 +68,13 @@ class _SecondPageState extends State<SecondPage> {
         reconnectOnClose: true,
         queueLength: 10,
         queueSize: 10);
+    startRobot = Topic(
+        ros: ros,
+        name: '/startRobot',
+        type: "std_msgs/String",
+        reconnectOnClose: true,
+        queueLength: 10,
+        queueSize: 10);
     initConnection();
 
     super.initState();
@@ -78,6 +89,9 @@ class _SecondPageState extends State<SecondPage> {
     await clean_type.advertise();
     await columns.advertise();
     await rows.advertise();
+    await startRobot.advertise();
+
+    //await startRobot.publish(controller.startRobotmsg);
     setState(() {});
     print('hi');
   }
@@ -91,6 +105,14 @@ class _SecondPageState extends State<SecondPage> {
   void _wetClean() async {
     var msg2 = {'data': 'w'};
     await clean_type.publish(msg2);
+  }
+
+  Future<void> _startTimer() async {
+    controller.timer_start = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        controller.seconds_count++;
+      });
+    });
   }
 
   void destroyConnection() async {
@@ -290,9 +312,12 @@ class _SecondPageState extends State<SecondPage> {
                       }
                       msg3['data'] = vPanelController.text;
                       msg4['data'] = hPanelController.text;
+                      msg5['data'] = '1';
                       //print(msg['type']);
                       await columns.publish(msg3);
                       await rows.publish(msg4);
+                      await startRobot.publish(msg5);
+                      _startTimer();
                     },
                     child: const Text('Start'),
                   ),

@@ -14,6 +14,11 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:roslibdart/roslibdart.dart';
 
+const List<Widget> icons = <Widget>[
+  Text('On'),
+  Text('Off'),
+];
+
 class thirdPage extends StatefulWidget {
   const thirdPage({
     super.key,
@@ -27,18 +32,23 @@ class thirdPage extends StatefulWidget {
 }
 
 class _thirdPageState extends State<thirdPage> {
-  late Topic battery_state;
+  //late Topic battery_state;
+  final List<bool> _selectedindex = <bool>[false, true];
   late Topic hours_cleaned;
-  late Topic damage_detects;
-  late Topic bat_state_request;
-  late Topic hours_cleaned_request;
-  late Topic damage_detects_request;
+  late Topic startRobot;
+  //late Topic damage_detects;
+  // late Topic bat_state_request;
+  // late Topic hours_cleaned_request;
+  // late Topic damage_detects_request;
   var selectedTab = 1;
   String new1 = '';
   bool damage = true;
   String damage_details = '';
   String cleaning_hours = '';
   String battery_status = '';
+  var msgStopRobot = '';
+  bool vertical = false;
+  Controller controller = Get.find();
   List<Choice> choices = <Choice>[
     Choice(title: 'Time Taken :', icon: Icons.access_alarm, details: ''),
     Choice(
@@ -46,23 +56,23 @@ class _thirdPageState extends State<thirdPage> {
         icon: Icons.battery_charging_full,
         details: ''),
     Choice(
-        title: 'Damage Detection :',
-        icon: Icons.cameraswitch_rounded,
+        title: 'Number of warnings detected :',
+        icon: Icons.error_outline_sharp,
         details: ''),
   ];
-  Controller controller = Get.find();
+
   @override
   void initState() {
     // TODO: implement initState
 
-    battery_state = Topic(
-      ros: controller.ros.value,
-      name: '/battery_state',
-      type: "std_msgs/String",
-      reconnectOnClose: true,
-      queueSize: 10,
-      queueLength: 10,
-    );
+    // battery_state = Topic(
+    //   ros: controller.ros.value,
+    //   name: '/battery_state',
+    //   type: "std_msgs/String",
+    //   reconnectOnClose: true,
+    //   queueSize: 10,
+    //   queueLength: 10,
+    // );
     hours_cleaned = Topic(
       ros: controller.ros.value,
       name: '/hours_cleaned',
@@ -71,14 +81,14 @@ class _thirdPageState extends State<thirdPage> {
       queueSize: 10,
       queueLength: 10,
     );
-    damage_detects = Topic(
-      ros: controller.ros.value,
-      name: '/damage_detects',
-      type: "std_msgs/String",
-      reconnectOnClose: true,
-      queueSize: 10,
-      queueLength: 10,
-    );
+    // damage_detects = Topic(
+    //   ros: controller.ros.value,
+    //   name: '/damage_detects',
+    //   type: "std_msgs/String",
+    //   reconnectOnClose: true,
+    //   queueSize: 10,
+    //   queueLength: 10,
+    // );
     // bat_state_request = Topic(
     //     ros: controller.ros.value,
     //     name: '/bat_state_request',
@@ -100,16 +110,38 @@ class _thirdPageState extends State<thirdPage> {
     //     reconnectOnClose: true,
     //     queueLength: 10,
     //     queueSize: 10);
+    startRobot = Topic(
+        ros: controller.ros.value,
+        name: '/startRobot',
+        type: "std_msgs/String",
+        reconnectOnClose: true,
+        queueLength: 10,
+        queueSize: 10);
     super.initState();
     mymethod();
     //initConnection();
     print(controller.ros.value.status);
   }
 
+  void _onRobotauto() async {
+    var msg1 = {'data': '1'};
+    await startRobot.publish(msg1);
+    //await clean_motor_manual.unadvertise();
+  }
+
+  void _offRobotauto() async {
+    var msg2 = {'data': '0'};
+    await startRobot.publish(msg2);
+    // await clean_motor_manual.unadvertise();
+  }
+
   void initConnection() async {
     print(controller.ros.value.status);
     controller.rosConnect();
     await controller.newRow.subscribe(controller.subscribeHandler1);
+    await startRobot.advertise();
+    // var msg = {'data': '0'};
+    // await startRobot.publish(msg);
     // await bat_state_request.advertise();
     // var msg = {'data': 'battery_state_requesting '};
     // await bat_state_request.publish(msg);
@@ -119,9 +151,9 @@ class _thirdPageState extends State<thirdPage> {
     // await damage_detects_request.advertise();
     // var msg3 = {'data': 'damage_detects_requesting '};
     // await damage_detects_request.publish(msg3);
-    await damage_detects.subscribe(subscribeHandler1);
+    //await damage_detects.subscribe(subscribeHandler1);
     await hours_cleaned.subscribe(subscribeHandler2);
-    await battery_state.subscribe(subscribeHandler3);
+    // await battery_state.subscribe(subscribeHandler3);
     //await forward.subscribe(); //advertise?
 
     setState(() {});
@@ -131,11 +163,11 @@ class _thirdPageState extends State<thirdPage> {
 
   Future<void> subscribeHandler1(Map<String, dynamic> msg) async {
     //msg = {'data': '128777'};
-    damage_details = msg['data'];
-    choices[2] = Choice(
-        title: 'Damage Detection :',
-        icon: Icons.cameraswitch_rounded,
-        details: damage_details);
+    // damage_details = msg['data'];
+    // choices[2] = Choice(
+    //     title: 'Warning Detection :',
+    //     icon: Icons.cameraswitch_rounded,
+    //     details: damage_details);
     // print(damage_details);
     // //controller.isError.value = true;
     // print(controller.isError.value);
@@ -145,17 +177,15 @@ class _thirdPageState extends State<thirdPage> {
 
   Future<void> subscribeHandler2(Map<String, dynamic> msg) async {
     //msg = {'data': '12'};
-    cleaning_hours = msg['data'];
+    //cleaning_hours = msg['data'];
     choices[0] = Choice(
         title: 'Time Taken :',
         icon: Icons.access_alarm,
-        details: cleaning_hours);
-    // setState(() {});
-  }
-
-  Future<void> subscribeHandler3(Map<String, dynamic> msg) async {
-    //msg = {'data': '15'};
-    battery_status = msg['data'];
+        details: controller.time_spend.value);
+    choices[2] = Choice(
+        title: 'Number of warnings detected :',
+        icon: Icons.error_outline_sharp,
+        details: controller.warningDetails.value);
     choices[1] = Choice(
         title: 'Battery Level :',
         icon: Icons.battery_charging_full,
@@ -163,12 +193,22 @@ class _thirdPageState extends State<thirdPage> {
     // setState(() {});
   }
 
+  Future<void> subscribeHandler3(Map<String, dynamic> msg) async {
+    //msg = {'data': '15'};
+    //battery_status = msg['data'];
+    // choices[1] = Choice(
+    //     title: 'Battery Level :',
+    //     icon: Icons.battery_charging_full,
+    //     details: battery_status);
+    // setState(() {});
+  }
+
   //TOPIC HANDLING
   void destroyConnection() async {
     //await chatter.unsubscribe(); //forward unadvertise?
-    await damage_detects.unsubscribe();
+    //await damage_detects.unsubscribe();
     await hours_cleaned.unsubscribe();
-    await battery_state.unsubscribe();
+    //await battery_state.unsubscribe();
 
     await controller.ros.value.close();
     setState(() {});
@@ -292,40 +332,104 @@ class _thirdPageState extends State<thirdPage> {
                                               MainAxisAlignment.center,
                                           children: <Widget>[
                                             Padding(
-                                              padding:
-                                                  EdgeInsets.only(right: 15),
+                                              padding: EdgeInsets.only(
+                                                  right: 15, top: 10),
                                             ),
                                             Expanded(
                                               // Added
                                               child: Container(
                                                   child: Column(
-                                                children: [
-                                                  ActionChip(
-                                                    label: Text(controller.ros
-                                                                .value.status ==
-                                                            Status.connected
-                                                        ? 'DISCONNECT'
-                                                        : 'CONNECT'),
-                                                    backgroundColor: controller
-                                                                .ros
-                                                                .value
-                                                                .status ==
-                                                            Status.connected
-                                                        ? Colors.green[300]
-                                                        : Colors.grey[300],
-                                                    onPressed: () async {
-                                                      print(controller
-                                                          .ros.value.status);
-                                                      if (controller.ros.value
-                                                              .status !=
-                                                          Status.connected) {
-                                                        this.initConnection();
-                                                        print("not");
-                                                      } else {
-                                                        print("co");
-                                                        this.destroyConnection();
-                                                      }
-                                                    },
+                                                children: <Widget>[
+                                                  Row(
+                                                    children: <Widget>[
+                                                      ActionChip(
+                                                        label: Text(controller
+                                                                    .ros
+                                                                    .value
+                                                                    .status ==
+                                                                Status.connected
+                                                            ? 'CONNECTED'
+                                                            : 'CONNECTION  LOST'),
+                                                        backgroundColor: controller
+                                                                    .ros
+                                                                    .value
+                                                                    .status ==
+                                                                Status.connected
+                                                            ? Colors.green[300]
+                                                            : Colors.grey[300],
+                                                        onPressed: () async {
+                                                          print(controller.ros
+                                                              .value.status);
+                                                          if (controller
+                                                                  .ros
+                                                                  .value
+                                                                  .status !=
+                                                              Status
+                                                                  .connected) {
+                                                            this.initConnection();
+                                                            print("not");
+                                                          } else {
+                                                            print("co");
+                                                            this.destroyConnection();
+                                                          }
+                                                        },
+                                                      ),
+                                                      SizedBox(
+                                                        width: 40,
+                                                      ),
+                                                      ToggleButtons(
+                                                          direction: vertical
+                                                              ? Axis.vertical
+                                                              : Axis.horizontal,
+                                                          onPressed:
+                                                              (int index) {
+                                                            setState(() {
+                                                              // The button that is tapped is set to true, and the others to false.
+
+                                                              for (int i = 0;
+                                                                  i <
+                                                                      _selectedindex
+                                                                          .length;
+                                                                  i++) {
+                                                                _selectedindex[
+                                                                        i] =
+                                                                    i == index;
+                                                              }
+                                                              //publish topics
+                                                              if (index == 0) {
+                                                                // initConnection();
+                                                                _onRobotauto();
+                                                              } else if (index ==
+                                                                  1) {
+                                                                //initConnection();
+                                                                _offRobotauto();
+                                                              }
+                                                              //destroyConnection();
+                                                            });
+                                                          },
+                                                          borderRadius:
+                                                              const BorderRadius
+                                                                      .all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          10)),
+                                                          selectedBorderColor:
+                                                              Colors.black,
+                                                          selectedColor:
+                                                              Colors.white,
+                                                          fillColor: Colors
+                                                              .red[200],
+                                                          color: Colors
+                                                              .red[400],
+                                                          constraints:
+                                                              const BoxConstraints(
+                                                            minHeight: 50.0,
+                                                            minWidth: 50.0,
+                                                          ),
+                                                          isSelected:
+                                                              _selectedindex,
+                                                          children: icons),
+                                                    ],
                                                   ),
                                                   Expanded(
                                                       child: RobotAnimation()

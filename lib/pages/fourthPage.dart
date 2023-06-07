@@ -86,21 +86,19 @@ class _fourthPageState extends State<fourthPage> {
       leftState = false;
       movingState = true;
     });
-    Vibration.vibrate(pattern: [500, 1000, 500, 2000], intensities: [1, 255]);
+    Vibration.vibrate(pattern: [200, 200], intensities: [1, 255]);
 
     var msg = {'data': 'f'};
     await manualControl.publish(msg);
-    // print('cmd published');
-    // print('done publihsed forward topic');
   }
 
   void forwardRelease_func() async {
     //change code to continously press button
-
+    setState(() {
+      forwardState = false;
+    });
     var msg = {'data': 'z'};
     await manualControl.publish(msg);
-    // print('cmd published');
-    // print('done publihsed forward topic');
   }
 
   void backward_func() async {
@@ -111,7 +109,7 @@ class _fourthPageState extends State<fourthPage> {
       leftState = false;
       movingState = true;
     });
-    Vibration.vibrate(pattern: [500, 1000, 500, 2000], intensities: [1, 255]);
+    Vibration.vibrate(pattern: [200, 200], intensities: [1, 255]);
 
     var msg = {'data': 'b'};
     await manualControl.publish(msg);
@@ -125,7 +123,9 @@ class _fourthPageState extends State<fourthPage> {
 
   void backwardRelease_func() async {
     //change code to continously press button
-
+    setState(() {
+      reverseState = false;
+    });
     var msg = {'data': 'z'};
     await manualControl.publish(msg);
     // print('cmd published');
@@ -140,7 +140,7 @@ class _fourthPageState extends State<fourthPage> {
       leftState = false;
       movingState = true;
     });
-    Vibration.vibrate(pattern: [500, 1000, 500, 2000], intensities: [1, 255]);
+    Vibration.vibrate(pattern: [200, 200], intensities: [1, 255]);
     var msg = {'data': 'r'};
     await manualControl.publish(msg);
     // print('cmd published');
@@ -152,7 +152,9 @@ class _fourthPageState extends State<fourthPage> {
 
   void rightRelease_func() async {
     //change code to continously press button
-
+    setState(() {
+      rightState = false;
+    });
     var msg = {'data': 'z'};
     await manualControl.publish(msg);
     // print('cmd published');
@@ -167,7 +169,7 @@ class _fourthPageState extends State<fourthPage> {
       leftState = true;
       movingState = true;
     });
-    Vibration.vibrate(pattern: [500, 1000, 500, 2000], intensities: [1, 255]);
+    Vibration.vibrate(pattern: [200, 200], intensities: [1, 255]);
     var msg = {'data': 'l'};
     await manualControl.publish(msg);
     // print('cmd published');
@@ -177,9 +179,41 @@ class _fourthPageState extends State<fourthPage> {
     // print('done publihsed left topic');
   }
 
+  void showPopup(BuildContext context) {
+    OverlayEntry overlayEntry;
+    overlayEntry = OverlayEntry(
+      builder: (BuildContext context) => Positioned(
+        top: 0,
+        left: 0,
+        right: 0,
+        child: Container(
+          color: Colors.white,
+          height: 100,
+          child: Center(
+            child: Obx(() {
+              return Text(
+                controller.userWarning.value,
+                style: TextStyle(fontSize: 15),
+              );
+            }),
+          ),
+        ),
+      ),
+    );
+
+    Overlay.of(context)?.insert(overlayEntry);
+
+    // Delayed removal of the overlay
+    Future.delayed(Duration(seconds: 2), () {
+      overlayEntry.remove();
+    });
+  }
+
   void leftRelease_func() async {
     //change code to continously press button
-
+    setState(() {
+      leftState = false;
+    });
     var msg = {'data': 'z'};
     await manualControl.publish(msg);
     // print('cmd published');
@@ -267,8 +301,8 @@ class _fourthPageState extends State<fourthPage> {
 
                       ActionChip(
                         label: Text(snapshot.data == Status.connected
-                            ? 'DISCONNECT'
-                            : 'CONNECT'),
+                            ? 'CONNECTION  ESTABLISHED'
+                            : 'CONNECTION  LOST'),
                         backgroundColor: snapshot.data == Status.connected
                             ? Colors.green[300]
                             : Colors.grey[300],
@@ -281,6 +315,7 @@ class _fourthPageState extends State<fourthPage> {
                           }
                         },
                       ),
+
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
@@ -381,18 +416,44 @@ class _fourthPageState extends State<fourthPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           _buildControlButton(
-                              icon: Icons.arrow_upward,
-                              pressed: forwardState,
-                              onPressed: () {
+                            icon: Icons.arrow_upward,
+                            pressed: forwardState,
+                            onPressed: () {
+                              setState(() {});
+                              print("Third page   " +
+                                  controller.warningNumber.value.toString());
+                              if (controller.warningNumber.value != 2 ||
+                                  controller.warningNumber.value != 6 ||
+                                  controller.warningNumber.value != 7) {
                                 forward_func();
-                                // Send command to robot to move forward
-                              },
-                              onReleased: () {
+                              } else {
+                                showPopup(context);
+                                return null;
+                              }
+                            },
+
+                            // onPressed:
+                            // (controller.warningNumber.value != 2)
+                            //     ? () => forward_func()
+                            //     : null,
+
+                            onReleased: () {
+                              setState(() {});
+                              print("Third page   " +
+                                  controller.warningNumber.value.toString());
+                              if (controller.warningNumber.value != 2 ||
+                                  controller.warningNumber.value != 6 ||
+                                  controller.warningNumber.value != 7) {
                                 forwardRelease_func();
-                                setState(() {
-                                  forwardState = false;
-                                });
-                              }),
+                              } else {
+                                showPopup(context);
+                                return null;
+                              }
+                            },
+                            // onReleased: (controller.warningNumber.value != 2)
+                            //     ? () => forwardRelease_func()
+                            //     : null
+                          ),
                         ],
                       ),
                       // Padding(
@@ -404,16 +465,31 @@ class _fourthPageState extends State<fourthPage> {
                           _buildControlButton(
                             icon: Icons.arrow_back,
                             pressed: leftState,
+                            // onPressed: (controller.warningNumber.value != 4)
+                            //     ? () => left_func()
+                            //     : null,
                             onPressed: () {
-                              //print('done publihsed');
-                              left_func();
-                              // Send command to robot to turn left
+                              setState(() {});
+
+                              if (controller.warningNumber.value != 4 ||
+                                  controller.warningNumber.value != 6 ||
+                                  controller.warningNumber.value != 7) {
+                                left_func();
+                              } else {
+                                return null;
+                              }
                             },
                             onReleased: () {
-                              leftRelease_func();
-                              setState(() {
-                                leftState = false;
-                              });
+                              setState(() {});
+                              print("Third page   " +
+                                  controller.warningNumber.value.toString());
+                              if (controller.warningNumber.value != 4 ||
+                                  controller.warningNumber.value != 6 ||
+                                  controller.warningNumber.value != 7) {
+                                leftRelease_func();
+                              } else {
+                                return null;
+                              }
                             },
                           ),
                           // _buildControlButton(
@@ -432,15 +508,26 @@ class _fourthPageState extends State<fourthPage> {
                             icon: Icons.arrow_forward,
                             pressed: rightState,
                             onPressed: () {
-                              right_func();
-                              // Send command to robot to turn right
+                              setState(() {});
+
+                              if (controller.warningNumber.value != 5 ||
+                                  controller.warningNumber.value != 6 ||
+                                  controller.warningNumber.value != 7) {
+                                right_func();
+                              } else {
+                                return null;
+                              }
                             },
                             onReleased: () {
-                              rightRelease_func();
-                              setState(() {
-                                rightState = false;
-                              });
-                              //print(forwardState);
+                              setState(() {});
+
+                              if (controller.warningNumber.value != 5 ||
+                                  controller.warningNumber.value != 6 ||
+                                  controller.warningNumber.value != 7) {
+                                rightRelease_func();
+                              } else {
+                                return null;
+                              }
                             },
                           ),
                         ],
@@ -452,19 +539,31 @@ class _fourthPageState extends State<fourthPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           _buildControlButton(
-                              icon: Icons.arrow_downward,
-                              pressed: reverseState,
-                              onPressed: () {
+                            icon: Icons.arrow_downward,
+                            pressed: reverseState,
+                            onPressed: () {
+                              setState(() {});
+
+                              if (controller.warningNumber.value != 3 ||
+                                  controller.warningNumber.value != 6 ||
+                                  controller.warningNumber.value != 7) {
                                 backward_func();
-                                // Send command to robot to move in reverse
-                              },
-                              onReleased: () {
+                              } else {
+                                return null;
+                              }
+                            },
+                            onReleased: () {
+                              setState(() {});
+
+                              if (controller.warningNumber.value != 3 ||
+                                  controller.warningNumber.value != 6 ||
+                                  controller.warningNumber.value != 7) {
                                 backwardRelease_func();
-                                setState(() {
-                                  reverseState = false;
-                                });
-                                //print(forwardState);
-                              }),
+                              } else {
+                                return null;
+                              }
+                            },
+                          ),
                         ],
                       ),
                     ],

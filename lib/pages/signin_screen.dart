@@ -59,10 +59,10 @@ class _SignInScreenState extends State<SignInScreen> {
                   try {
                     final newUser =
                         await FirebaseAuth.instance.signInWithEmailAndPassword(
-                      // email: _emailTextController.text,
-                      // password: _passwordTextController.text,
-                      email: "fixit@gmail.com",
-                      password: "12345678",
+                      email: _emailTextController.text,
+                      password: _passwordTextController.text,
+                      // email: "fixit@gmail.com",
+                      // password: "12345678",
                     );
                     if (newUser != null) {
                       Navigator.push(
@@ -75,11 +75,14 @@ class _SignInScreenState extends State<SignInScreen> {
                       //check errorpage and endnotify page
                       // controller.verticle.value = 5;
                       // controller.horizontal.value = 5;
-                      //controller.isEnd.value = true;
+                      // controller.isEnd.value = true;
                       //controller.isEndvalue.value = true;
-                      //controller.isError.value = true;
+                      // controller.isError.value = true;
+                      // controller.userWarning.value =
+                      //     'I2C Disabled. Cannot go beyond.';
                       // Navigator.push(context,
                       //     MaterialPageRoute(builder: (context) => ErrorPage()));
+                      //controller.warningDetails.value = '1';
                     }
                   } on FirebaseAuthException catch (e) {
                     if (e.code == 'user-not-found') {
