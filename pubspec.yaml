@@ -49,6 +49,7 @@ dependencies:
   web_socket_channel: ^2.3.0
   vibration: ^1.7.7
   flutter_ringtone_player: ^3.2.0
+  timer_count_down: ^2.2.2
   
   
   
