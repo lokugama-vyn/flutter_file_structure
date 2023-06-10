@@ -59,10 +59,8 @@ class _SignInScreenState extends State<SignInScreen> {
                   try {
                     final newUser =
                         await FirebaseAuth.instance.signInWithEmailAndPassword(
-                      // email: _emailTextController.text,
-                      // password: _passwordTextController.text,
-                      email: "fixit@gmail.com",
-                      password: "12345678",
+                      email: _emailTextController.text,
+                      password: _passwordTextController.text,
                     );
                     if (newUser != null) {
                       Navigator.push(
