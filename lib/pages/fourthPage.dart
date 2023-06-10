@@ -422,9 +422,7 @@ class _fourthPageState extends State<fourthPage> {
                               setState(() {});
                               print("Third page   " +
                                   controller.warningNumber.value.toString());
-                              if (controller.warningNumber.value != 2 ||
-                                  controller.warningNumber.value != 6 ||
-                                  controller.warningNumber.value != 7) {
+                              if (controller.warningNumber.value != 2) {
                                 forward_func();
                               } else {
                                 showPopup(context);
@@ -441,9 +439,7 @@ class _fourthPageState extends State<fourthPage> {
                               setState(() {});
                               print("Third page   " +
                                   controller.warningNumber.value.toString());
-                              if (controller.warningNumber.value != 2 ||
-                                  controller.warningNumber.value != 6 ||
-                                  controller.warningNumber.value != 7) {
+                              if (controller.warningNumber.value != 2) {
                                 forwardRelease_func();
                               } else {
                                 showPopup(context);
@@ -471,9 +467,7 @@ class _fourthPageState extends State<fourthPage> {
                             onPressed: () {
                               setState(() {});
 
-                              if (controller.warningNumber.value != 4 ||
-                                  controller.warningNumber.value != 6 ||
-                                  controller.warningNumber.value != 7) {
+                              if (controller.warningNumber.value != 4) {
                                 left_func();
                               } else {
                                 return null;
@@ -483,9 +477,7 @@ class _fourthPageState extends State<fourthPage> {
                               setState(() {});
                               print("Third page   " +
                                   controller.warningNumber.value.toString());
-                              if (controller.warningNumber.value != 4 ||
-                                  controller.warningNumber.value != 6 ||
-                                  controller.warningNumber.value != 7) {
+                              if (controller.warningNumber.value != 4) {
                                 leftRelease_func();
                               } else {
                                 return null;
@@ -510,9 +502,7 @@ class _fourthPageState extends State<fourthPage> {
                             onPressed: () {
                               setState(() {});
 
-                              if (controller.warningNumber.value != 5 ||
-                                  controller.warningNumber.value != 6 ||
-                                  controller.warningNumber.value != 7) {
+                              if (controller.warningNumber.value != 5) {
                                 right_func();
                               } else {
                                 return null;
@@ -521,9 +511,7 @@ class _fourthPageState extends State<fourthPage> {
                             onReleased: () {
                               setState(() {});
 
-                              if (controller.warningNumber.value != 5 ||
-                                  controller.warningNumber.value != 6 ||
-                                  controller.warningNumber.value != 7) {
+                              if (controller.warningNumber.value != 5) {
                                 rightRelease_func();
                               } else {
                                 return null;
@@ -544,9 +532,7 @@ class _fourthPageState extends State<fourthPage> {
                             onPressed: () {
                               setState(() {});
 
-                              if (controller.warningNumber.value != 3 ||
-                                  controller.warningNumber.value != 6 ||
-                                  controller.warningNumber.value != 7) {
+                              if (controller.warningNumber.value != 3) {
                                 backward_func();
                               } else {
                                 return null;
@@ -555,9 +541,7 @@ class _fourthPageState extends State<fourthPage> {
                             onReleased: () {
                               setState(() {});
 
-                              if (controller.warningNumber.value != 3 ||
-                                  controller.warningNumber.value != 6 ||
-                                  controller.warningNumber.value != 7) {
+                              if (controller.warningNumber.value != 3) {
                                 backwardRelease_func();
                               } else {
                                 return null;

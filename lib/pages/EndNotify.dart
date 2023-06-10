@@ -35,7 +35,7 @@ class _EndNotifyState extends State<EndNotify> {
               child: Text('Ok'),
               onPressed: () {
                 FlutterRingtonePlayer.stop();
-                // controller.isEnd.value = false;
+                //controller.isEnd.value = false;
                 Navigator.push(
                     context,
                     MaterialPageRoute(

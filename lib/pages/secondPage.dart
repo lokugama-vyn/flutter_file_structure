@@ -312,7 +312,7 @@ class _SecondPageState extends State<SecondPage> {
                       }
                       msg3['data'] = vPanelController.text;
                       msg4['data'] = hPanelController.text;
-                      msg5['data'] = '1';
+                      msg5['data'] = '0';
                       //print(msg['type']);
                       await columns.publish(msg3);
                       await rows.publish(msg4);
